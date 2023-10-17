@@ -24,7 +24,7 @@ class PedidosResource extends JsonResource
             "sit_entrega" => $this->sit_entrega,
             "nome_cliente" => $this->cliente->nome,
             "vendedor" => $this->vendedor->nome,
-           
+
         ];
     }
 }

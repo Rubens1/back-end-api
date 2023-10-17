@@ -5,16 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Nfe extends Model
+class NFE extends Model
 {
-
     use HasFactory;
-    protected $table = "nfe";
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+
+    protected $table = 'nfe';
+
+    protected $primaryKey = 'id';
+
     protected $fillable = [
         'id_danfe_remote',
         'id_pedido',
@@ -49,11 +47,15 @@ class Nfe extends Model
         'datahora_last_update',
     ];
 
+    protected $casts = [
+        'amb' => 'integer',
+        'nfe' => 'integer',
+        'cStat' => 'integer',
+        // Add more castings for other fields as needed
+    ];
 
-    /**
-     * Timestamps foi setado como falso.
-     *
-     */
-    public $timestamps = false;
-
+    protected $dates = [
+        'datahora',
+        'datahora_last_update',
+    ];
 }

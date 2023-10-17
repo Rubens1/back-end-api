@@ -41,7 +41,7 @@ return new class extends Migration
             $table->decimal('tx_entrega', 10, 2)->nullable();
             $table->integer('km_lim_entrega')->default(0);
             $table->string('foto', 255)->nullable();
-            $table->string('recebe_dinheiro', 8)->default('0');
+            $table->string('recebe_dinheiro', 8)->nullable()->default('0');
             $table->integer('km_lim_entrega_ex')->nullable();
             $table->decimal('tx_entrega_ex', 10, 2)->nullable();
             $table->string('referencia', 255)->nullable();

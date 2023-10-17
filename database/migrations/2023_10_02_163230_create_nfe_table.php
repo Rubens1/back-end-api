@@ -29,13 +29,13 @@ return new class extends Migration
             $table->string('xmlProt')->nullable();
             $table->string('xJust')->nullable();
             $table->enum('regApuracao', ['SIMPLES', 'REAL', 'PRESUMIDO'])->nullable();
-            $table->integer('iss')->nullable();
-            $table->integer('pis')->nullable();
-            $table->integer('cofins')->nullable();
-            $table->integer('csll')->nullable();
-            $table->integer('irpj')->nullable();
+            $table->decimal('iss', 10, 2)->nullable();
+            $table->decimal('pis', 10, 2)->nullable();
+            $table->decimal('cofins', 10, 2)->nullable();
+            $table->decimal('csll', 10, 2)->nullable();
+            $table->decimal('irpj', 10, 2)->nullable();
             $table->string('cpp')->nullable();
-            $table->integer('icms')->nullable();
+            $table->decimal('icms', 10, 2)->nullable();
             $table->decimal('aliquota_simples', 10, 2)->nullable();
             $table->decimal('valorDanfe', 10, 2)->nullable();
             $table->decimal('valorImpostos', 10, 2)->nullable();
@@ -44,7 +44,6 @@ return new class extends Migration
             $table->string('cfop', 8)->nullable();
             $table->string('versao')->nullable();
             $table->datetime('datahora_last_update')->nullable();
-            $table->timestamps();
         });
     }
 

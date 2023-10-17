@@ -12,6 +12,7 @@ class PessoasEndereco extends Model
     protected $table = 'pessoas_enderecos';
 
     protected $fillable = [
+        "nome",
         "id_pessoa",
         'situacao',
         'filial',

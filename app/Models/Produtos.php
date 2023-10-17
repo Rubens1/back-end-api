@@ -52,4 +52,10 @@ class Produtos extends Model
         'demo',
         'gabarito',
     ];
+
+    protected $hidden = [
+        "updated_at",
+        "created_at"
+    ];
 }
+

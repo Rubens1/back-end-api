@@ -2,14 +2,18 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{
-    PessoaController,
-    NfeController,
-    CategoriaController,
-    PedidoController,
-    ProdutoController
-};
+use App\Http\Controllers\PessoasController;
 
+use App\Http\Controllers\Api\Admin\{
+    ProdutoController,
+    PedidoController,
+    AdminLoginController,
+    GerenciamentoPedidoController,
+    NFEController,
+    CategoriaController,
+    EnderecoController,
+    EstoqueController
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -22,36 +26,64 @@ use App\Http\Controllers\{
 |
 */
 
-//API Pessoas
-Route::post('/pessoa-entrar', [PessoaController::class, 'entrar']);
-Route::post('/pessoa-sair', [PessoaController::class, 'sair']);
-Route::post('/pessoa-cadastro', [PessoaController::class, 'cadastro']);
-Route::get('/pessoa-perfil', [PessoaController::class, 'pessoaPerfil']);
-Route::get('/pessoa-lista', [PessoaController::class, 'lista']); 
+//Pessoa
+Route::post('/pessoa-entrar', [PessoasController::class, 'entrar']);
+Route::post('/pessoa-sair', [PessoasController::class, 'sair']);
+Route::post('/pessoa-cadastro', [PessoasController::class, 'cadastro']);
+Route::put('/pessoa-atualizar', [PessoasController::class, 'atualizarToken']);
+Route::get('/pessoa-perfil', [PessoasController::class, 'pessoaPerfil']);
+Route::get('/pessoa-lista', [PessoasController::class, 'listar']);
+Route::get('/pessoas-lista-paginada', [PessoasController::class, 'listarPaginada']);
+Route::get("/pessoa/{id}", [PessoasController::class, "info"]);
+Route::post("/cadastrar-endereco-cliente", [PessoasController::class, "cadastrarEndereco"]);
+Route::put("/editar-cliente/{id}", [PessoasController::class, "editarDadosCliente"]);
 
-//API Nfe
-Route::get('/lista-nfe', [NfeController::class, 'lista']);
+//Endereço
+Route::get("/enderecos-cliente/{id}", [EnderecoController::class, "obterListaDeEnderecosDoCliente"]);
+Route::get("/endereco/{id}", [EnderecoController::class, "obterEnderecoPeloId"]);
+Route::post("/cadastrar-endereco-cliente", [EnderecoController::class, "cadastrarEndereco"]);
+Route::put("/editar-endereco/{id}", [EnderecoController::class, "editarEndereco"]);
+
+//Categoria
+Route::get("/categorias", [CategoriaController::class, "listar"]);
+Route::post("/cadastrar-categoria", [CategoriaController::class, "criarCategoria"]);
+Route::delete("/excluir-categoria/{id}", [CategoriaController::class, "excluir"]);
+Route::get("/categorias/{id}", [CategoriaController::class, "info"]);
+Route::put("/editar-categoria/{id}", [CategoriaController::class, "editar"]);
+
+
+//Nota fiscal
+Route::get('/nfe', [NfeController::class, 'listar']);
 Route::post('/registrar-nfe', [NfeController::class, 'registrar']);
 Route::get('/nfe/{id}', [NfeController::class, 'info']);
 
-//API Categoria
-Route::get("/categorias", [CategoriaController::class, "lista"]);
-Route::post("/cadastrar-categoria", [CategoriaController::class, "cadastrar"]);
-Route::get("/categorias/{id}", [CategoriaController::class, "info"]);
-
-//API Pedidos
-Route::get("/pedidos", [PedidoController::class, "lista"]);
-Route::get("/pedidos/cliente/{cliente_id}", [PedidoController::class, "clienteId"]);
-Route::get("/vendas/vendedor/{vendedor_id}", [PedidoController::class, "vendedorId"]);
-Route::get("/pedidos-por-status", [PedidoController::class, "orderStatus"]);
-Route::post('/registrar-pedido', [PedidoController::class, 'registrar']);
-
-//API Produtos
-Route::get("/produtos", [ProdutoController::class, "lista"]);
-Route::post("/cadastrar-produto", [ProdutoController::class, "cadastra"]);
-Route::patch("/editar-produto/{produto_id}", [ProdutoController::class, "editar"]);
 
 
-//API Estoque
-Route::post("/registrar-produto-em-estoque", [EstoqueController::class, "registraNoEstoque"]);
-Route::post("/retirar-produto-do-estoque/{id_produto}", [EstoqueController::class, "adicionarNoEstoque"]);
+//Pedido
+Route::get("/lista/pedidos/", [PedidoController::class, "listar"]);
+Route::get("/lista/pedidos/cliente/{cliente_id}", [PedidoController::class, "listaPorClienteId"]);
+Route::get("/lista/vendas/{vendedor_id}", [PedidoController::class, "listarPorVendedorId"]);
+Route::get("/lista/pedidos-por-status", [PedidoController::class, "listarPorStatus"]);
+Route::post("/criar-pedido", [PedidoController::class, "criarPedido"]);
+Route::get("/pedido/{pedido_id}", [PedidoController::class, "obtePorPedidoId"]);
+Route::get("/venda/vendedor/{vendedor_id}", [PedidoController::class, "obterPorVendedorId"]);
+Route::get("/pedido/cliente/{id}", [PedidoController::class, "obterPorClienteId"]);
+
+//Gerenciamento de Pedido
+Route::put("/mudar-status-pedido/{pedido_id}", [GerenciamentoPedidoController::class, "atualizarStatusPedido"]);
+Route::put("/mudar-status-entrega/{pedido_id}", [GerenciamentoPedidoController::class, "atualizarStatusEntrega"]);
+Route::put("/mudar-status-pagamento/{pedido_id}", [GerenciamentoPedidoController::class, "atualizarStatusPagamento"]);
+Route::put("/mudar-status-producao/{pedido_id}", [GerenciamentoPedidoController::class, "atualizarStatusProducao"]);
+
+//Produtos
+Route::get("/produtos", [ProdutoController::class, "listar"]);
+Route::post("/cadastrar-produto", [ProdutoController::class, "cadastrarProduto"]);
+Route::put("/editar-produto/{produto_id}", [ProdutoController::class, "editarProduto"]);
+Route::delete("/deletar-produto/{id}", [ProdutoController::class, "excluirProduto"]);
+
+//Estoque
+Route::post("/registrar-produto-em-estoque", [EstoqueController::class, "registrarProdutoEmEstoque"]);
+Route::put("/retirar-produto-do-estoque/{id_produto}", [EstoqueController::class, "retirarProdutoEstoque"]);
+Route::put("/adicionar-no-estoque/{id_produto}", [EstoqueController::class, "adicionarAoEstoque"]);
+Route::put("/editar-estoque/{id_produto}", [EstoqueController::class, "editarEstoque"]);
+

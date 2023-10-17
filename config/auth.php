@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'pessoa',
+        'guard' => 'pessoas',
         'passwords' => 'pessoas',
     ],
 
@@ -36,8 +36,7 @@ return [
     */
 
     'guards' => [
-        
-        'pessoa' => [
+        'pessoas' => [
             'driver' => 'jwt',
             'provider' => 'pessoas',
         ],
@@ -63,7 +62,8 @@ return [
     'providers' => [
         'pessoas' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Pessoa::class,
+            'model' => App\Models\Pessoas::class,
+            'password' => 'senha',
         ],
     ],
 
@@ -90,8 +90,9 @@ return [
         'pessoas' => [
             'provider' => 'pessoas',
             'table' => 'password_reset_tokens',
-            'expire' => 60*24,
+            'expire' => 60,
             'throttle' => 60,
+            'column' => 'senha'
         ],
     ],
 
