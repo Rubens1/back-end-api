@@ -2,43 +2,55 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 use App\Models\{
     Produtos,
     CategoriaProdutos,
-    Estoque
+    Estoque,
+    Pessoas
 };
 
-
+use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{Hash, Validator};
 
 class ProdutoController extends Controller
 {
     /**
-     * Lista de produto
+     * Create a new AuthController instance.
+     *
+     * @return void
      */
-    public function lista()
+    public function __construct() {
+        $this->middleware('auth:pessoas', ['except' => ['listar']]);
+    }
+
+    /**
+     * Lista todos os produtos de forma paginada
+     */
+    
+   
+    public function listar()
     {
 
-        $produtos = Estoque::with(["produto"])->paginate(10);
+        $produtos = Produtos::paginate(10);
         
 
         return response()->json($produtos);
     }
 
     /**
-     * Cadastra produto
+     * Registra um produto
      */
-    public function cadastra(Request $request)
+    public function cadastrarProduto(Request $request)
     {
         try {
 
             $validador = Validator::make($request->all(), [
                 "sn" => "unique:produtos",
                 'id_especializacao' => 'nullable|integer',
-                'ativo' => 'integer',
-                'nome' => 'string|unique:produtos',
+                'nome' => 'required|string|unique:produtos',
                 'src_alt' => 'nullable|string',
                 'proporcao_venda' => 'nullable|string|max:15',
                 'proporcao_consumo' => 'nullable|string|max:15',
@@ -60,7 +72,7 @@ class ProdutoController extends Controller
                 'altura' => 'nullable|numeric|between:0,9999999999.99',
                 'peso' => 'nullable|numeric|between:0,9999999999.999',
                 'largura' => 'nullable|numeric|between:0,9999999999.99',
-                'comprimento' => 'numeric|between:0,9999999999.99',
+                'comprimento' => 'required|numeric|between:0,9999999999.99',
                 'origem' => 'nullable|string',
                 'sub_tributaria' => 'nullable|string',
                 'origem_noie' => 'nullable|string',
@@ -70,14 +82,13 @@ class ProdutoController extends Controller
                 'id_foto_default' => 'nullable|integer',
                 'id_fabricante' => 'nullable|integer',
                 'id_produto_avulso' => 'nullable|integer|unique:produtos',
-                'demo' => 'integer',
                 'gabarito' => 'nullable|string',
 
             ]);
 
 
             if ($validador->fails()) {
-                return response()->json($validador->errors());
+                return response()->json(["errors" => $validador->errors()], 400);
             }
 
             Produtos::create($request->all());
@@ -86,18 +97,34 @@ class ProdutoController extends Controller
                 "status" => "success",
                 "message" => "produto cadastro com suscesso"
             ]);
+
         } catch (Exception $e) {
             return response()->json([
+                "error" => $e->getMessage(),
                 "status" => "ERROR",
                 "message" => "Desculpe estamos enfrentando problemas internos."
             ], 500);
         }
     }
 
+    public function excluirProduto(Request $request, $id)
+    {
+        $estoque = Estoque::where("id_produto", $id)->delete();
+
+        $produto = Produtos::where("id", $id)->delete();
+
+        return response()->json([
+            "status" => "success",
+            "message" => "Excluído com suscesso"
+        ]);
+    }
+    
     /**
-     * Editar produto
+     * Edita informações de um produto passando o id
+     * passando ao menos algum campo para editar
+     * caso passe nenhum vai ser retornado uma mensagem de erro.
      */
-    public function editar(Request $request, $id_produto)
+    public function editarProduto(Request $request, $id_produto)
     {
         $validador = Validator::make($request->all(), [
             "sn" => "unique:produtos",
@@ -169,4 +196,6 @@ class ProdutoController extends Controller
             ], 500);
         }
     }
+
+    
 }

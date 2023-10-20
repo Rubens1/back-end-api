@@ -2,32 +2,43 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Resources\PedidosResource;
+use App\Jobs\ProcessMailQueue;
 use App\Models\{
     Pedidos,
-    PedidosItens
+    PedidosItens,
+    Produtos,
+    CategoriaProdutos
 };
-use Illuminate\Support\Facades\{Hash, Validator};
+use Exception;
+use Illuminate\Support\Facades\{
+    Hash,
+    Validator
+};
+
+use function Laravel\Prompts\error;
 
 class PedidoController extends Controller
 {
-     /**
-     * Mostra todos os pedidos
+    /**
+     * Lista de forma resumida e paginada todos os pedidos
      */
-    public function lista()
+    public function listar()
     {
         $pedidos = Pedidos::where("is_active", 1)
             ->paginate(10);
 
-        return response()->json([
-            'data' => $pedidos
-        ]);
+        return PedidosResource::collection($pedidos);
     }
 
     /**
-     * Mostrar o pedido do cliente
-    */
-    public function clienteId(Request $request, $cliente_id)
+     * Lista todos pediddos de forma resumida e paginada 
+     * todos pedidos de um cliente passando o id do cliente
+     */
+
+    public function listaPorClienteId(Request $request, $cliente_id)
     {
         $pedidos = Pedidos::where("id_cliente", $cliente_id)->paginate(10);
 
@@ -38,15 +49,14 @@ class PedidoController extends Controller
             ], 400);
         }
 
-        return response()->json([
-            'data' => $pedidos
-        ]);
+        return PedidosResource::collection($pedidos);
     }
 
     /**
-     * Mostrar o pedido para o vendedor
-    */
-    public function VendedorId(Request $request, $id)
+     * Lista de forma resumida de todas as vendas do vendedor 
+     * passando o seu id
+     */
+    public function listarPorVendedorId(Request $request, $id)
     {
         $pedidos = Pedidos::where("id_vendedor", $id)->paginate(10);
 
@@ -57,15 +67,16 @@ class PedidoController extends Controller
             ], 400);
         }
 
-        return response()->json([
-            'data' => $pedidos
-        ]);
+        return PedidosResource::collection($pedidos);
     }
 
     /**
-     * Orderna o status dos pedidos
-    */
-    public function orderStatus(Request $request)
+     * Filtra todos pedidos pelo status passando uma query string na URL
+     * ?sit_pagto, ?sit_pedido, ?sit_entrega, ?sit_producao
+     * Caso não passe nenhum parâmetro na URL será retornado uma mensagem
+     * de erro informando que não foi passado nenhum parâmetro
+     */
+    public function listarPorStatus(Request $request)
     {
 
         if ($request->query("sit_pagto")) {
@@ -78,9 +89,7 @@ class PedidoController extends Controller
                 ]);
             }
 
-            return Presponse()->json([
-                'data' => $pedidos
-            ]);
+            return PedidosResource::collection($pedidos);
         }
 
         if ($request->query("sit_pedido")) {
@@ -93,9 +102,7 @@ class PedidoController extends Controller
                 ]);
             }
 
-            return response()->json([
-                'data' => $pedidos
-            ]);
+            return PedidosResource::collection($pedidos);
         }
 
         if ($request->query("sit_entrega")) {
@@ -108,9 +115,7 @@ class PedidoController extends Controller
                 ]);
             }
 
-            return response()->json([
-                'data' => $pedidos
-            ]);
+            return PedidosResource::collection($pedidos);
         }
 
         if ($request->query("sit_producao")) {
@@ -123,9 +128,7 @@ class PedidoController extends Controller
                 ]);
             }
 
-            return response()->json([
-                'data' => $pedidos
-            ]);
+            return PedidosResource::collection($pedidos);
         }
 
         return response()->json([
@@ -135,9 +138,10 @@ class PedidoController extends Controller
     }
 
     /**
-     * Mostrar o pedido do cliente
-    */
-    public function pedidoId(Request $request, $id)
+     * Obtem de forma detalhada a informações de um pedido 
+     * passando o id do cliente
+     */
+    public function obtePorPedidoId(Request $request, $id)
     {
         $pedido = Pedidos::where("id", $id)
             ->with([
@@ -169,9 +173,10 @@ class PedidoController extends Controller
     }
 
     /**
-     * Mostrar o pedido detalhado do cliente
-    */
-    public function listaclienteId(Request $request, $id)
+     * Obtem as informações de forma detalhada de um pedido
+     * passando o id do cliente 
+     */
+    public function obterPorClienteId(Request $request, $id)
     {
         $pedido = Pedidos::where("id_cliente", $id)
             ->with([
@@ -203,9 +208,10 @@ class PedidoController extends Controller
     }
 
     /**
-     * Mostrar o pedido detalhado para o vendedor
-    */
-    public function vendedorLista(Request $request, $id)
+     * Obtem de forma detalhada as informações de um pedido passando 
+     * o id do vendedor
+     */
+    public function obterPorVendedorId(Request $request, $id)
     {
         $pedido = Pedidos::where("id_vendedor", $id)
             ->with([
@@ -235,10 +241,10 @@ class PedidoController extends Controller
             ]
         ]);
     }
-    
+   
     /**
-     * Criar pedido
-    */
+     * Cria um pedido pelo vendedor localmente.
+     */
     public function criarPedido(Request $request)
     {
         $validator = Validator::make($request->all(), [

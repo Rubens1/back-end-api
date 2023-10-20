@@ -2,16 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
+use App\Helpers\Logger;
 use Illuminate\Http\Request;
-use App\Models\Estoque;
-use Illuminate\Support\Facades\{Hash, Validator};
+use App\Models\{
+    Produtos,
+    Estoque,
+    Actions,
+    ActionsHistory
+};
+use Exception;
+use GuzzleHttp\Promise\Create;
+use Illuminate\Support\Facades\{
+    Hash,
+    Validator
+};
 
 class EstoqueController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:pessoas');
+    }
+
+
     /**
-     * Registra no estoque
+     * Registra um produto e também registra ele no estoque.
      */
-    public function criarComEstoque(Request $request)
+    public function registarProdutoComEstoque(Request $request)
     {
         $validator = Validator::make($request->all(), [
             "id_produto" => "required|unique:estoque",
@@ -40,9 +58,9 @@ class EstoqueController extends Controller
     }
 
     /**
-     * Registra no estoque caso se o produto estiver no estoque
+     * registra um produto no estoque passando o id do produto
      */
-    public function registraNoEstoque(Request $request)
+    public function registrarProdutoEmEstoque(Request $request)
     {
         $validator = Validator::make($request->all(), [
             "id_produto" => "required|unique:estoque",
@@ -95,7 +113,7 @@ class EstoqueController extends Controller
 
             return response()->json([
                 "status" => "success",
-                "message" => "Produto adicionado ao estoue"
+                "message" => "Produto adicionado ao estoque"
             ]);
         } catch (Exception $e) {
             echo $e->getMessage();
@@ -107,29 +125,82 @@ class EstoqueController extends Controller
     }
 
     /**
-     * Editar estoque
+     * Edita informações do estoque exceto o preço
      */
-    public function editar(Request $request, $id_produto)
+    public function editarEstoque(Request $request, $id_produto)
     {
         try {
+
+            $validator = Validator::make($request->all(), [
+                'id_origem' => ['nullable', 'integer'],
+                'id_destino' => ['nullable', 'integer'],
+                'id_pedido' => ['nullable', 'integer'],
+                'qtd' => ['nullable', 'integer'],
+                'id_pedido_item' => ['nullable', 'integer'],
+                'id_compra' => ['nullable', 'integer'],
+                'opt' => ['nullable', 'string', 'max:18'],
+                'datahora' => ['nullable', 'date'],
+                'obs' => ['nullable', 'string', 'max:255'],
+                'finalidade' => ['nullable', 'string', 'in:USO_CONSUMO,VENDA,INDEFINIDO,CONSERTO,INVESTIMENTO'],
+                'grupo' => ['nullable', 'string', 'max:255'],
+                'id_agente' => ['nullable', 'integer'],
+                'datahora_reg' => ['nullable', 'date'],
+                'id_agente_remocao' => ['nullable', 'integer'],
+                'removido' => ['nullable', 'integer'],
+                'datahora_remocao' => ['nullable', 'date'],
+                'nf' => ['nullable', 'string', 'max:255'],
+                'id_nf' => ['nullable', 'integer'],
+                'preco_compra' => ['nullable', 'numeric', 'max:9999999.99'],
+                'preco_vendido' => ['nullable', 'numeric', 'max:9999999.99'],
+                'sn' => ['nullable', 'string', 'max:255'],
+            ]);
+
+            if(count($request->input()) == 0) {
+                return response()->json([
+                    "status" => "ERROR",
+                    "message" => "Para editar o produto passe ao menos algum campo valído não passe campos vazios."
+                ], 400);
+            }
+
+            if($validator->fails()) {
+                return response()->json($validator->errors(), 400);
+            }
+
             $estoque = Estoque::where("id_produto", $id_produto)
                 ->first();
-            
+
+            if(!$estoque || $estoque == null) {
+                return response()->json([
+                    'status' => "ERROR",
+                    "message"
+                ]);
+            }
+
             $estoque->id_origem = $request->id_origem ?? $estoque->id_origem;
             $estoque->id_destino = $request->id_destino ?? $estoque->id_destino;
             $estoque->id_pedido_item = $request->pedido_item ?? $estoque->id_pedido_item;
             $estoque->id_compra = $request->id_pedido_compra ?? $estoque->id_pedido_compra;
             $estoque->opt = $request->opt ?? $estoque->opt;
-            $estoque->finalidade = $request->finalidade ;
+            $estoque->finalidade = $request->finalidade ?? $estoque->finalidade;
+            $estoque->grupo = $request->grupo ?? $estoque->grupo;
+            $estoque->id_agente = $request->id_agente ?? $estoque->id_agente;
+            $estoque->id_agente_remocao = $request->id_agente_remocao ?? $estoque->id_agente_remocao;
+            $estoque->removido = $request->removido ?? $estoque->removido;
+            $estoque->preco_compra = $request->preco_compra ?? $estoque->preco_compra;
+            $estoque->preco_vendido = $request->preco_vendido ?? $estoque->preco_vendido;
+            $estoque->sn = $request->sn ?? $estoque->sn;
+            $estoque->id_categoria = $estoque->id_categoria ?? $estoque->id_categoria;
+            $estoque->id_evento = $estoque->id_evento ?? $estoque->id_evento;
 
         } catch (Exception $e) {
         }
     }
 
     /**
-     * Remover do estoque
+     * retira algum item do estoque e depois insere na tabela actions_history
+     * passando a observações
      */
-    public function removerDoEstoque(Request $request, $id_produto)
+    public function retirarProdutoEstoque(Request $request, $id_produto)
     {
         try {
             $validator = validator::make($request->only("qtd"), [
@@ -185,19 +256,16 @@ class EstoqueController extends Controller
     }
 
     /**
-     * Adicionar no estoque
+     * adiciona algum item no estoque e depois insere na tabela actions_history
+     * passando a observações
      */
-    public function adicionarNoEstoque(Request $request, $id_produto)
+    public function adicionarAoEstoque(Request $request, $id_produto)
     {
         try {
             $validator = validator::make($request->only("qtd"), [
                 "qtd" => "required|min:1|integer"
             ]);
 
-            $mock_user = [
-                "pessoa_id" => 1,
-                "nome" => "Lucas Souza Silva"
-            ];
 
             if ($validator->fails()) {
                 return response()->json($validator->errors(), 400);
@@ -240,5 +308,4 @@ class EstoqueController extends Controller
             echo $e->getMessage();
         }
     }
-
 }

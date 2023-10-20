@@ -2,9 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PessoasController;
 
-use App\Http\Controllers\Api\Admin\{
+use App\Http\Controllers\{
+    PessoasController,
     ProdutoController,
     PedidoController,
     AdminLoginController,
@@ -12,7 +12,8 @@ use App\Http\Controllers\Api\Admin\{
     NFEController,
     CategoriaController,
     EnderecoController,
-    EstoqueController
+    EstoqueController,
+    ValidacaoController
 };
 
 /*
@@ -35,8 +36,7 @@ Route::get('/pessoa-perfil', [PessoasController::class, 'pessoaPerfil']);
 Route::get('/pessoa-lista', [PessoasController::class, 'listar']);
 Route::get('/pessoas-lista-paginada', [PessoasController::class, 'listarPaginada']);
 Route::get("/pessoa/{id}", [PessoasController::class, "info"]);
-Route::post("/cadastrar-endereco-cliente", [PessoasController::class, "cadastrarEndereco"]);
-Route::put("/editar-cliente/{id}", [PessoasController::class, "editarDadosCliente"]);
+Route::put("/editar-pessoa/{id}", [PessoasController::class, "editarPessoa"]);
 
 //Endereço
 Route::get("/enderecos-cliente/{id}", [EnderecoController::class, "obterListaDeEnderecosDoCliente"]);
@@ -51,13 +51,10 @@ Route::delete("/excluir-categoria/{id}", [CategoriaController::class, "excluir"]
 Route::get("/categorias/{id}", [CategoriaController::class, "info"]);
 Route::put("/editar-categoria/{id}", [CategoriaController::class, "editar"]);
 
-
 //Nota fiscal
 Route::get('/nfe', [NfeController::class, 'listar']);
 Route::post('/registrar-nfe', [NfeController::class, 'registrar']);
 Route::get('/nfe/{id}', [NfeController::class, 'info']);
-
-
 
 //Pedido
 Route::get("/lista/pedidos/", [PedidoController::class, "listar"]);
@@ -87,3 +84,7 @@ Route::put("/retirar-produto-do-estoque/{id_produto}", [EstoqueController::class
 Route::put("/adicionar-no-estoque/{id_produto}", [EstoqueController::class, "adicionarAoEstoque"]);
 Route::put("/editar-estoque/{id_produto}", [EstoqueController::class, "editarEstoque"]);
 
+//Função
+Route::get('/cpf/{cpf}', [ValidacaoController::class, 'validaCPF']);
+Route::get('/cnpj/{cnpj}', [ValidacaoController::class, 'validaCNPJ']);
+Route::get('/cep/{cep}', [ValidacaoController::class, 'buscaCEP']);

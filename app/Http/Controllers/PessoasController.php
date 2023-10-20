@@ -194,73 +194,6 @@ class PessoasController extends Controller
         ], 200);
     }
 
-    public function cadastrarEndereco(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'filial' => 'nullable|string|max:60',
-            'logradouro' => 'required|string|max:100',
-            'numero' => 'nullable|string|max:20',
-            'complemento' => 'nullable|string|max:45',
-            'bairro' => 'nullable|string|max:50',
-            'cep' => 'required|string|max:10',
-            'cidade' => 'required|string|max:50',
-            'cod_municipio' => 'nullable|string|max:10',
-            'estado' => 'required|string|size:2',
-            'responsavel' => 'required|string|max:60',
-            'rg_responsavel' => 'nullable|string|max:10',
-            'ip_cadastro' => 'nullable|ipv4',
-            'obs' => 'nullable|string',
-            'active' => 'integer|in:0,1',
-            'favorite' => 'integer|in:0,1',
-            'id_usuario' => 'integer|nullable',
-            'cod_uf' => 'integer|nullable',
-            'fone' => 'nullable|string|max:254',
-            'retirada' => 'string|size:8',
-            'impressao' => 'string|size:8',
-            'material' => 'string|size:8',
-            'venda' => 'string|size:8',
-            'layout' => 'string|size:8',
-            'faz_entrega' => 'string|size:8',
-            'tx_entrega' => 'numeric|nullable',
-            'km_lim_entrega' => 'integer',
-            'foto' => 'nullable|string|max:255',
-            'recebe_dinheiro' => 'string|size:8|nullable',
-            'km_lim_entrega_ex' => 'integer|nullable',
-            'tx_entrega_ex' => 'numeric|nullable',
-            'referencia' => 'nullable|string|max:255',
-            'id_matriz' => 'integer|nullable',
-            'faz_entrega_ex' => 'string|size:8',
-            'id_pessoa' => 'required|exists:pessoas,id',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                "errors" => $validator->errors()
-            ], 400);
-        }
-
-        try {
-            $endereco = PessoasEndereco::create(array_merge(
-                $validator->validated(),
-                [
-                    "situacao" => "Ativo"
-                ]
-            ))->fresh();
-
-            return response()->json([
-                "status" => "success",
-                "message" => "Endereço cadastrado",
-                "endereco" => $endereco
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                "status" => "error",
-                "message" => "Desculpe estamos enfrentado problemas internos.",
-                "error" => $e->getMessage()
-            ]);
-        }
-    }
-
     /**
      * Informação individual de pessoa
      *
@@ -274,7 +207,7 @@ class PessoasController extends Controller
      * Editar Cliente
      *
      */
-    public function editarDadosCliente(Request $request, $id)
+    public function editarPessoa(Request $request, $id)
     {
         try {
             $validator = Validator::make($request->only("email", "cpfcnpj", "rg"), [

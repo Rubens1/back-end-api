@@ -2,27 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Nfe;
-use Illuminate\Support\Facades\{Hash, Validator};
+use Illuminate\Http\Request;
+use App\Models\NFE;
+use Illuminate\Support\Facades\{
+    Hash,
+    Validator
+};
 
-class NfeController extends Controller
+use Exception;
+
+class NFEController extends Controller
 {
-    /**
-     * Lista Nfe.
-     *
-     */
-    public function lista() {
-        return Nfe::all();
+
+    public function index(Request $request)
+    {
+        $perPage = $request->query("perPage") ?? 10;
+
+        $nfe = NFE::paginate($perPage);
     }
 
     /**
-     * Registrar Nfe.
+     * Cadastrar Nfe.
      *
      */
-    public function registrar(Request $request) {
-        $request->validate([
+    public function register(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
             'id_danfe_remote' => 'integer',
             'id_pedido' => 'integer',
             'chave' => 'string',
@@ -46,27 +52,38 @@ class NfeController extends Controller
             'irpj' => 'string',
             'cpp' => 'string',
             'icms' => 'integer',
-            'aliquota_simples' => 'numeric',
-            'valorDanfe' => 'numeric',
-            'valorImpostos' => 'numeric',
-            'valorFrete' => 'numeric',
+            'aliquota_simples' => 'string',
+            'valorDanfe' => 'string',
+            'valorImpostos' => 'string',
+            'valorFrete' => 'string',
             'protCancelXML' => 'string',
             'cfop' => 'string',
             'versao' => 'string',
-            'datahora_last_update' => 'string',            
+            'datahora_last_update' => 'string',
         ]);
-        try{
-            return Nfe::create($request->all());
-        }catch(Error $e){
+
+        try {
+
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 400);
+            }
+
+            NFE::create($request->validated());
+
+            return response()->json([
+                "status" => "ERROR",
+                "message" => "Desculpe estamos enfrentand problemas internos."
+            ], 500);
+        } catch (Exception $e) {
             return $e;
         }
     }
 
-     /**
-     * Ver um regsitro de Nfe.
-     *
+    /**
+     * Obtem a NFE pelo id da nfe
      */
-    public function info($id) {
-        return Nfe::findOrfail($id);
+    public function info($id)
+    {
+        return NFE::findOrfail($id);
     }
 }
