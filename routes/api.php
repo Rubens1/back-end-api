@@ -84,7 +84,7 @@ Route::put("/retirar-produto-do-estoque/{id_produto}", [EstoqueController::class
 Route::put("/adicionar-no-estoque/{id_produto}", [EstoqueController::class, "adicionarAoEstoque"]);
 Route::put("/editar-estoque/{id_produto}", [EstoqueController::class, "editarEstoque"]);
 
-//Função
+//Validações
 Route::get('/cpf/{cpf}', [ValidacaoController::class, 'validaCPF']);
 Route::get('/cnpj/{cnpj}', [ValidacaoController::class, 'validaCNPJ']);
 Route::get('/cep/{cep}', [ValidacaoController::class, 'buscaCEP']);
