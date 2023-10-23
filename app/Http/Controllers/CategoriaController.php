@@ -4,10 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\{
-    Hash,
-    Validator
-};
+use Illuminate\Support\Facades\{Hash, Validator};
 use App\Models\Categorias;
 use Exception;
 

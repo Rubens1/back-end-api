@@ -29,8 +29,6 @@ class ProdutoController extends Controller
     /**
      * Lista todos os produtos de forma paginada
      */
-    
-   
     public function listar()
     {
 

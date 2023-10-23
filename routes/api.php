@@ -13,7 +13,9 @@ use App\Http\Controllers\{
     CategoriaController,
     EnderecoController,
     EstoqueController,
-    ValidacaoController
+    ValidacaoController,
+    GrupoController,
+    PessoaGrupoController
 };
 
 /*
@@ -88,3 +90,15 @@ Route::put("/editar-estoque/{id_produto}", [EstoqueController::class, "editarEst
 Route::get('/cpf/{cpf}', [ValidacaoController::class, 'validaCPF']);
 Route::get('/cnpj/{cnpj}', [ValidacaoController::class, 'validaCNPJ']);
 Route::get('/cep/{cep}', [ValidacaoController::class, 'buscaCEP']);
+
+//Grupos
+Route::delete("/deletar-grupo/{id}", [GrupoController::class, "excluir"]);
+Route::put("/editar-grupo/{id}", [GrupoController::class, "editar"]);
+Route::post("/cadastrar-grupo", [GrupoController::class, "cadastrar"]);
+Route::get("/lista-grupos", [GrupoController::class, "listar"]);
+
+//Permição da Pessoa
+Route::put("/editar-permicap/{id}", [PessoaGrupoController::class, "editar"]);
+Route::post("/cadastrar-permissao", [PessoaGrupoController::class, "cadastrarColaborador"]);
+Route::get("/pessoa-permissao/{id_pessoa}", [PessoaGrupoController::class, "permissao"]);
+Route::get("/lista-permissoes", [PessoaGrupoController::class, "listar"]);
