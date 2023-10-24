@@ -15,7 +15,8 @@ use App\Http\Controllers\{
     EstoqueController,
     ValidacaoController,
     GrupoController,
-    PessoaGrupoController
+    PessoaGrupoController,
+    LoggerController
 };
 
 /*
@@ -102,3 +103,8 @@ Route::put("/editar-permicap/{id}", [PessoaGrupoController::class, "editar"]);
 Route::post("/cadastrar-permissao", [PessoaGrupoController::class, "cadastrarColaborador"]);
 Route::get("/pessoa-permissao/{id_pessoa}", [PessoaGrupoController::class, "permissao"]);
 Route::get("/lista-permissoes", [PessoaGrupoController::class, "listar"]);
+
+//Logs
+Route::get("/logs/{id}", [LoggerController::class, "obterLogs"]);
+Route::get("/logs-lista", [LoggerController::class, "lista"]);
+Route::post("/criar-log", [LoggerController::class, "criarLog"]);

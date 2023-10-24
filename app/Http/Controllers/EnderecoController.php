@@ -88,12 +88,23 @@ class EnderecoController extends Controller
      * Obtem os enderecos do cliente pelo id do cliente 
      */
 
-    public function obterListaDeEnderecosDoCliente(Request $request, $id)
-    {
-        $endereco = PessoasEndereco::where("id_pessoa", $id)->get();
-
-        return response()->json($endereco);
-    }
+     public function obterListaDeEnderecosDoCliente(Request $request, $id)
+     {
+         try {
+ 
+             $enderecos = PessoasEndereco::where("id_pessoa", $id)->get();
+ 
+             return response()->json([
+                 "enderecos" => $enderecos,
+                 "quantidade" => $enderecos->count()
+             ]);
+ 
+         } catch (Exception $e) {
+             return response([
+                 "error" => "Erro"
+             ], 500);
+         }
+     }
 
     /**
      * Obtem o endereco do cliente pelo Id
