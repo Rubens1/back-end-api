@@ -24,6 +24,6 @@ class PedidosPagamento extends Model
 
     public function pedido()
     {
-        return $this->belongsTo(Pedido::class, 'id_pedido');
+        return $this->belongsTo(Pedidos::class, 'id_pedido');
     }
 }

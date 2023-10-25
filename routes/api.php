@@ -100,7 +100,7 @@ Route::get("/lista-grupos", [GrupoController::class, "listar"]);
 
 //Permição da Pessoa
 Route::put("/editar-permicap/{id}", [PessoaGrupoController::class, "editar"]);
-Route::post("/cadastrar-permissao", [PessoaGrupoController::class, "cadastrarColaborador"]);
+Route::post("/cadastrar-permissao", [PessoaGrupoController::class, "cadastrarPermissao"]);
 Route::get("/pessoa-permissao/{id_pessoa}", [PessoaGrupoController::class, "permissao"]);
 Route::get("/lista-permissoes", [PessoaGrupoController::class, "listar"]);
 

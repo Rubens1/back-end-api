@@ -10,9 +10,9 @@ class CategoriaProdutos extends Model
     use HasFactory;
     protected $table = 'categorias_produtos';
 
-    protected $primaryKey = null; // Since you have a composite primary key, set this to null
+    protected $primaryKey = null;
 
-    public $incrementing = false; // Since you have a composite primary key, set this to false
+    public $incrementing = false;
 
     protected $hidden = [
         "created_at",

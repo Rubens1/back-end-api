@@ -3,45 +3,62 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\PessoaGrupo;
+use App\Models\{PessoaGrupos, Pessoas};
 use Illuminate\Support\Facades\{Hash, Validator};
 use Exception;
 
 class PessoaGrupoController extends Controller
 {
+
+
     /**
      * Lista todos os permição das pessoas
      */
     public function listar()
     {
-        return PessoaGrupo::all();
+        return PessoaGrupos::all();
     }
 
     /**
      * Cadastra Grupo
      */
-    public function cadastrarColaborador(Request $request)
+    public function cadastrarPermissao(Request $request)
     {
-        $validator = validator::make($request->all(), [
-            'id_grupo' => 'nullable|integer',
-            'sessao' => 'required|string',
-            'array_permissoes' => 'string',
-            'id_pessoa' => 'required|integer'
-        ]);
-    
-        if ($validator->fails()) {
-            return response()->json(["errors" => $validator->errors()], 400);
-        }
         try {
-            PessoaGrupo::create($request->all());
+            $info = [
+                'nome' => $request->nome,
+                'email' => $request->email,
+                'senha' => $request->senha,
+                'sessao' => $request->sessao ?? null,
+                'array_permissoes' => $request->array_permissoes ?? null,
+                'id_grupo' => $request->id_grupo ?? null,
+            ];
+            $pessoas = Pessoas::where("email", $request->email)
+            ->first();
+
+            if($pessoas){
+                return response()->json([
+                    "status" => "Error",
+                    "message" => "Email já cadastrado"
+                ], 401);
+            }
+
+            $pessoa = Pessoas::create([
+                "nome" => $info["nome"],
+                "email" => $info["email"],
+                "senha" => bcrypt($info["senha"])
+            ])->fresh();
+
+            $merged = [...$info, "id_pessoa" => $pessoa->id];
+            PessoaGrupos::create($merged);
         
-        return response()->json([
-            "status" => "SUCCESS",
-            "message" => "Permição adicionada"
-        ]);
+            return response()->json([
+                "status" => "Success",
+                "message" => "Colaborador cadastrado com sucesso"
+            ]);
         }catch (Exception $e) {
             return response()->json([
-                "status" => "ERROR",
+                "status" => "Error",
                 "message" => "Desculpe estamos com problemas",
                 "error" => $e->getMessage()
             ], 500);
@@ -53,7 +70,7 @@ class PessoaGrupoController extends Controller
      */
     public function permissao(Request $request)
     {
-        $result = PessoaGrupo::where('id_pessoa', $request->id_pessoa)
+        $result = PessoaGrupos::where('id_pessoa', $request->id_pessoa)
         ->join('pessoas', 'pessoas.id', '=', 'pessoa_grupos.id_pessoa')
         ->select('pessoa_grupos.sessao', 'pessoa_grupos.array_permissoes', 'pessoas.nome')
         ->first();
@@ -83,7 +100,7 @@ class PessoaGrupoController extends Controller
         // Lida com o caso em que não há resultados
         return response()->json(['message' => 'Nenhum resultado encontrado'], 404);
     }
-        /* return PessoaGrupo::where('id_pessoa', $request->id_pessoa)
+        /* return PessoaGrupos::where('id_pessoa', $request->id_pessoa)
         ->join('pessoas', 'pessoas.id', '=', 'pessoa_grupos.id_pessoa')
         ->select('pessoa_grupos.*', 'pessoas.nome')
         ->get(); */

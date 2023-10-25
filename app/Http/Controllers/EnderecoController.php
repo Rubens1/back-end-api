@@ -71,13 +71,13 @@ class EnderecoController extends Controller
             )->fresh();
 
             return response()->json([
-                "status" => "success",
+                "status" => "Success",
                 "message" => "Endereço cadastrado",
                 "endereco" => $endereco
             ]);
         } catch (Exception $e) {
             return response()->json([
-                "status" => "error",
+                "status" => "Error",
                 "message" => "Desculpe estamos enfrentado problemas internos.",
                 "error" => $e->getMessage()
             ]);
@@ -126,7 +126,7 @@ class EnderecoController extends Controller
 
             if (count($request->input()) == 0) {
                 return response()->json([
-                    "status" => "ERROR",
+                    "status" => "Error",
                     "message" => "Para atualizar algum item no estoque passe pelo um parametro"
                 ], 400);
             }

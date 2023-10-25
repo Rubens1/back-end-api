@@ -19,7 +19,7 @@ class ValidacaoController extends Controller
        // Verifica se foi informado todos os dígitos corretamente
        if (strlen($cpf) != 11) {
            return response()->json([
-               'status' => 'erro',
+               'status' => 'Erro',
                'message' => 'CPF inválido',
            ], 400);
        }
@@ -27,7 +27,7 @@ class ValidacaoController extends Controller
        // Verifica se foi informada uma sequência de dígitos repetidos. Ex: 111.111.111-11
        if (preg_match('/(\d)\1{10}/', $cpf)) {
            return response()->json([
-               'status' => 'erro',
+               'status' => 'Erro',
                'message' => 'CPF inválido',
            ], 400);
        }
@@ -40,13 +40,13 @@ class ValidacaoController extends Controller
            $d = ((10 * $d) % 11) % 10;
            if ($cpf[$c] != $d) {
                return response()->json([
-                   'status' => 'erro',
+                   'status' => 'Erro',
                    'message' => 'CPF inválido',
                ], 400);
            }
        }
        return response()->json([
-           'status' => 'success',
+           'status' => 'Success',
            'message' => 'CPF válido',
        ], 200);
    }
@@ -59,14 +59,14 @@ class ValidacaoController extends Controller
        // Valida tamanho
        if (strlen($cnpj) != 14)
            return response()->json([
-               'status' => 'erro',
+               'status' => 'Erro',
                'message' => 'CNPJ inválido',
            ], 400);
 
        // Verifica se todos os digitos são iguais
        if (preg_match('/(\d)\1{13}/', $cnpj))
            return response()->json([
-               'status' => 'erro',
+               'status' => 'Erro',
                'message' => 'CNPJ inválido',
            ], 400);	
 
@@ -81,7 +81,7 @@ class ValidacaoController extends Controller
 
        if ($cnpj[12] != ($resto < 2 ? 0 : 11 - $resto))
            return response()->json([
-               'status' => 'erro',
+               'status' => 'Erro',
                'message' => 'CNPJ inválido',
            ], 400);
 
@@ -95,7 +95,7 @@ class ValidacaoController extends Controller
        $resto = $soma % 11;
 
        return response()->json([
-           'status' => 'success',
+           'status' => 'Success',
            'message' => 'CNPJ válido',
        ], 200);
    }

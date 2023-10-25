@@ -81,14 +81,14 @@ class PessoasController extends Controller
 
         if (!$token) {
             return response()->json([
-                'status' => 'error',
+                'status' => 'Error',
                 'message' => 'Acesso negado',
             ], 401);
         }
 
         $pessoa = auth('pessoas')->user();
         return response()->json([
-            'status' => 'success',
+            'status' => 'Success',
             'pessoa' => $pessoa,
             'authorization' => [
                 'token' => $token,
@@ -189,7 +189,7 @@ class PessoasController extends Controller
 
         auth('pessoas')->logout();
         return response()->json([
-            'status' => 'success',
+            'status' => 'Success',
             'message' => 'Desconectado',
         ], 200);
     }

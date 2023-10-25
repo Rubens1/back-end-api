@@ -26,11 +26,11 @@ class ProdutosClientes extends Model
 
     public function pessoa()
     {
-        return $this->belongsTo(Pessoa::class, 'id_pessoa');
+        return $this->belongsTo(Pessoas::class, 'id_pessoa');
     }
 
     public function produto()
     {
-        return $this->belongsTo(Produto::class, 'id_produto');
+        return $this->belongsTo(Produtos::class, 'id_produto');
     }
 }

@@ -5,26 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProdutoFornecedores extends Model
+class PessoaGrupos extends Model
 {
     use HasFactory;
-
-    protected $table = 'produto_fornecedores';
+    protected $table = 'pessoa_grupos';
 
     protected $fillable = [
-        'preco',
-        'datahora',
-        'id_produto',
         'id_pessoa',
+        'id_grupo',
+        'sessao',
+        'array_permissoes',
+        'id_pessoa',
+        'datahora',
     ];
 
-    protected $casts = [
-        'preco' => 'decimal:2',
-    ];
-
-    public function produto()
+    public function grupo()
     {
-        return $this->belongsTo(Produtos::class, 'id_produto');
+        return $this->belongsTo(Grupos::class, 'id_grupo');
     }
 
     public function pessoa()

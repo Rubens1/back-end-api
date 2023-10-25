@@ -26,7 +26,7 @@ class LoggerController extends Controller
 
         if ($logs->count() == 0) {
             return response()->json([
-                "status" => "error",
+                "status" => "Error",
                 "message" => "Log não econtrado"
             ], 422);
         }

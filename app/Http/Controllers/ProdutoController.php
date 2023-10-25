@@ -92,14 +92,14 @@ class ProdutoController extends Controller
             Produtos::create($request->all());
 
             return response()->json([
-                "status" => "success",
+                "status" => "Success",
                 "message" => "produto cadastro com suscesso"
             ]);
 
         } catch (Exception $e) {
             return response()->json([
                 "error" => $e->getMessage(),
-                "status" => "ERROR",
+                "status" => "Error",
                 "message" => "Desculpe estamos enfrentando problemas internos."
             ], 500);
         }
@@ -112,7 +112,7 @@ class ProdutoController extends Controller
         $produto = Produtos::where("id", $id)->delete();
 
         return response()->json([
-            "status" => "success",
+            "status" => "Success",
             "message" => "Excluído com suscesso"
         ]);
     }
@@ -132,7 +132,7 @@ class ProdutoController extends Controller
 
         if (count($request->input()) == 0) {
             return response()->json([
-                "status" => "ERROR",
+                "status" => "Error",
                 "message" => "Para editar o produto passe ao menos algum campo valído não passe campos vazios."
             ], 400);
         }
@@ -184,12 +184,12 @@ class ProdutoController extends Controller
             $produto->save();
 
             return response()->json([
-                "status" => "SUCCESS",
+                "status" => "Success",
                 "message" => "Produto atualizado com suscesso."
             ]);
         } catch (Exception $e) {
             return response()->json([
-                "status" => "ERROR",
+                "status" => "Error",
                 "message" => "Erro interno"
             ], 500);
         }

@@ -89,7 +89,7 @@ class EstoqueController extends Controller
 
         if (count($request->input()) == 0) {
             return response()->json([
-                "status" => "ERROR",
+                "status" => "Error",
                 "message" => "Para editar o registrar algum item no estoque passe ao menos algum campo valído, não passe campos vazios."
             ], 400);
         }
@@ -102,7 +102,7 @@ class EstoqueController extends Controller
 
         if ($produto == null || !$produto) {
             return response()->json([
-                "status" => "ERROR",
+                "status" => "Error",
                 "message" => "O índice do produto é inexistente."
             ], 400);
         }
@@ -112,13 +112,13 @@ class EstoqueController extends Controller
             Estoque::create($request->all());
 
             return response()->json([
-                "status" => "success",
+                "status" => "Success",
                 "message" => "Produto adicionado ao estoque"
             ]);
         } catch (Exception $e) {
             echo $e->getMessage();
             return response()->json([
-                "status" => "ERROR",
+                "status" => "Error",
                 "message" => "Desculpe estamos enfrentando problemas internos."
             ]);
         }
@@ -157,7 +157,7 @@ class EstoqueController extends Controller
 
             if(count($request->input()) == 0) {
                 return response()->json([
-                    "status" => "ERROR",
+                    "status" => "Error",
                     "message" => "Para editar o produto passe ao menos algum campo valído não passe campos vazios."
                 ], 400);
             }
@@ -171,7 +171,7 @@ class EstoqueController extends Controller
 
             if(!$estoque || $estoque == null) {
                 return response()->json([
-                    'status' => "ERROR",
+                    'status' => "Error",
                     "message"
                 ]);
             }
@@ -222,7 +222,7 @@ class EstoqueController extends Controller
 
             if (!$estoque || $estoque == null) {
                 return response()->json([
-                    "status" => "ERROR",
+                    "status" => "Error",
                     "messae" => "Índice fornecido é ínvalido ou inexistente"
                 ], 400);
             }
@@ -247,7 +247,7 @@ class EstoqueController extends Controller
             $estoque->save();
 
             return response()->json([
-                "status" => "SUCCESS",
+                "status" => "Success",
                 "message" => "Produto retirado do estoque"
             ]);
         } catch (Exception $e) {
@@ -277,7 +277,7 @@ class EstoqueController extends Controller
 
             if (!$estoque || $estoque == null) {
                 return response()->json([
-                    "status" => "ERROR",
+                    "status" => "Error",
                     "messae" => "Índice fornecido é ínvalido ou inexistente"
                 ], 400);
             }
@@ -301,7 +301,7 @@ class EstoqueController extends Controller
             $estoque->save();
 
             return response()->json([
-                "status" => "SUCCESS",
+                "status" => "Success",
                 "message" => "Produto adicionado ao estoque."
             ]);
         } catch (Exception $e) {

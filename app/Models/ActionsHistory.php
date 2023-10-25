@@ -28,21 +28,21 @@ class ActionsHistory extends Model
 
     public function pedido()
     {
-        return $this->belongsTo(Pedido::class, 'id_pedido');
+        return $this->belongsTo(Pedidos::class, 'id_pedido');
     }
 
     public function agente()
     {
-        return $this->belongsTo(Pessoa::class, 'id_agente');
+        return $this->belongsTo(Pessoas::class, 'id_agente');
     }
 
     public function pessoa()
     {
-        return $this->belongsTo(Pessoa::class, 'id_pessoa');
+        return $this->belongsTo(Pessoas::class, 'id_pessoa');
     }
 
     public function produto()
     {
-        return $this->belongsTo(Produto::class, 'id_produto');
+        return $this->belongsTo(Produtos::class, 'id_produto');
     }
 }

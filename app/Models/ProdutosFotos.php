@@ -21,6 +21,6 @@ class ProdutosFotos extends Model
     // Define the relationship with the 'produtos' table
     public function produto()
     {
-        return $this->belongsTo(Produto::class, 'id_produto');
+        return $this->belongsTo(Produtos::class, 'id_produto');
     }
 }

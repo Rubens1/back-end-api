@@ -26,6 +26,6 @@ class Artigos extends Model
 
     public function pessoa()
     {
-        return $this->belongsTo(Pessoa::class);
+        return $this->belongsTo(Pessoas::class);
     }
 }

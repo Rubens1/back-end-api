@@ -22,6 +22,6 @@ class ProdutosInfo extends Model
 
     public function produto()
     {
-        return $this->belongsTo(Produto::class, 'id_produto');
+        return $this->belongsTo(Produtos::class, 'id_produto');
     }
 }

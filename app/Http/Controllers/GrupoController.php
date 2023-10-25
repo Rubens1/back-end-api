@@ -35,12 +35,12 @@ class GrupoController extends Controller
             Grupos::create($request->all());
         
         return response()->json([
-            "status" => "SUCCESS",
+            "status" => "Success",
             "message" => "Grupo adicionada"
         ]);
         }catch (Exception $e) {
             return response()->json([
-                "status" => "ERROR",
+                "status" => "Error",
                 "message" => "Desculpe estamos com problemas",
                 "error" => $e->getMessage()
             ], 500);

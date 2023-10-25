@@ -107,12 +107,12 @@ class CategoriaController extends Controller
             Categorias::create($request->all());
 
             return response()->json([
-                "status" => "SUCCESS",
+                "status" => "Success",
                 "message" => "Categoria adicionada"
             ]);
         } catch (Exception $e) {
             return response()->json([
-                "status" => "ERROR",
+                "status" => "Error",
                 "message" => "Desculpe estamos com problemas",
                 "error" => $e->getMessage()
             ], 500);

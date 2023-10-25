@@ -28,11 +28,11 @@ class Caixa extends Model
 
     public function pessoa()
     {
-        return $this->belongsTo(Pessoa::class, 'id_pessoa');
+        return $this->belongsTo(Pessoas::class, 'id_pessoa');
     }
 
     public function pedido()
     {
-        return $this->belongsTo(Pedido::class, 'id_pedido');
+        return $this->belongsTo(Pedidos::class, 'id_pedido');
     }
 }

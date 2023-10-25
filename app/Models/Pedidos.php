@@ -49,28 +49,28 @@ class Pedidos extends Model
         'validade_proposta',
     ];
 
-    public function cliente()//ok
+    public function cliente()
     {
         return $this->belongsTo(Pessoas::class, 'id_cliente');
     }
 
-    public function opcaoFrete()//ok
+    public function opcaoFrete()
     {
         return $this->belongsTo(OpcoesFrete::class, 'id_op_frete');
     }
 
-    public function opcaoPagamento()//ok
+    public function opcaoPagamento()
     {
-        return $this->belongsTo(OpcoesPagamento::class, 'id_op_pagto');//ok
+        return $this->belongsTo(OpcoesPagamento::class, 'id_op_pagto');
     }
 
-    public function endereco()//
+    public function endereco()
     {
-        return $this->belongsTo(PessoasEndereco::class, 'id_endereco');//OK
+        return $this->belongsTo(PessoasEndereco::class, 'id_endereco');
     }
 
     public function vendedor()
     {
-        return $this->belongsTo(Pessoas::class, 'id_vendedor');//ok
+        return $this->belongsTo(Pessoas::class, 'id_vendedor');
     }
 }
