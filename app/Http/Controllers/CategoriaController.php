@@ -4,9 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\{Hash, Validator};
-use App\Models\Categorias;
+use Illuminate\Support\Facades\{
+    Hash,
+    Validator
+};
+use App\Models\{
+    Categorias
+};
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class CategoriaController extends Controller
 {
@@ -41,7 +47,6 @@ class CategoriaController extends Controller
         }
         return response()->json($data);
     }
-    
     /**
      * Mostra info de uma categoria pegando o id
      */
@@ -54,7 +59,6 @@ class CategoriaController extends Controller
 
         return $categoria;
     }
-
     /**
      * Edita a categoria
      */
@@ -77,13 +81,12 @@ class CategoriaController extends Controller
                 "fresh" => $categoria
             ]);
 
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 "error" => $e->getMessage()
             ], 500);
         }
     }
-
     /**
      * Cria uma categoria.
      */
@@ -107,15 +110,27 @@ class CategoriaController extends Controller
             Categorias::create($request->all());
 
             return response()->json([
-                "status" => "Success",
+                "status" => "SUCCESS",
                 "message" => "Categoria adicionada"
             ]);
         } catch (Exception $e) {
             return response()->json([
-                "status" => "Error",
+                "status" => "ERROR",
                 "message" => "Desculpe estamos com problemas",
                 "error" => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function obterCategoriaPorProduto(Request $request, $productId)
+    {
+        $categorias = DB::table('categorias')
+            ->select('categorias.*', 'subcategoria.id as idSubCategoria', 'subcategoria.categoria as subCategoria')
+            ->join('categorias as subcategoria', 'subcategoria.id_categoria', '=', 'categorias.id')
+            ->join('categorias_produtos', 'categorias_produtos.id_categoria', '=', 'categorias.id')
+            ->where('categorias_produtos.id_produto', '=', $productId)
+            ->get();
+
+        return response()->json($categorias);
     }
 }

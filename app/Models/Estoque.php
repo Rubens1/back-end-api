@@ -40,7 +40,7 @@ class Estoque extends Model
 
     public function evento()
     {
-        return $this->belongsTo(EstoqueEvento::class, 'id_evento');
+        return $this->belongsTo(EstoqueEventos::class, 'id_evento');
     }
 
     public function pessoa()

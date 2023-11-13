@@ -19,6 +19,7 @@ class EnderecoController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'filial' => 'nullable|string|max:60',
+            'identificacao' => "required|string",
             'logradouro' => 'required|string|max:100',
             'numero' => 'nullable|string|max:20',
             'complemento' => 'nullable|string|max:45',
@@ -71,13 +72,13 @@ class EnderecoController extends Controller
             )->fresh();
 
             return response()->json([
-                "status" => "Success",
+                "status" => "success",
                 "message" => "Endereço cadastrado",
                 "endereco" => $endereco
             ]);
         } catch (Exception $e) {
             return response()->json([
-                "status" => "Error",
+                "status" => "error",
                 "message" => "Desculpe estamos enfrentado problemas internos.",
                 "error" => $e->getMessage()
             ]);
@@ -88,23 +89,30 @@ class EnderecoController extends Controller
      * Obtem os enderecos do cliente pelo id do cliente 
      */
 
-     public function obterListaDeEnderecosDoCliente(Request $request, $id)
-     {
-         try {
- 
-             $enderecos = PessoasEndereco::where("id_pessoa", $id)->get();
- 
-             return response()->json([
-                 "enderecos" => $enderecos,
-                 "quantidade" => $enderecos->count()
-             ]);
- 
-         } catch (Exception $e) {
-             return response([
-                 "error" => "Erro"
-             ], 500);
-         }
-     }
+    public function obterListaDeEnderecosDoCliente(Request $request, $id)
+    {
+        try {
+
+            $enderecos = PessoasEndereco::where("id_pessoa", $id)->get();
+
+            if($enderecos->count() == 0) {
+                return response()->json([
+                    "status" => "error",
+                    "message" => "Usuário não possui nenhum endereço cadastrado."
+                ], 400);
+            }
+
+            return response()->json([
+                "enderecos" => $enderecos,
+                "quantidade" => $enderecos->count()
+            ]);
+
+        } catch (Exception $e) {
+            return response([
+                "error" => "Erro"
+            ], 500);
+        }
+    }
 
     /**
      * Obtem o endereco do cliente pelo Id
@@ -126,8 +134,8 @@ class EnderecoController extends Controller
 
             if (count($request->input()) == 0) {
                 return response()->json([
-                    "status" => "Error",
-                    "message" => "Para atualizar algum item no estoque passe pelo um parametro"
+                    "status" => "ERROR",
+                    "message" => "Para atualizar algum campo no tabela de endereço passe pelo um parametro válido"
                 ], 400);
             }
 
@@ -154,8 +162,11 @@ class EnderecoController extends Controller
 
         } catch (Exception $e) {
             return response()->json([
+                "error" => $e->getMessage(),
                 "message" => "Erro interno tente mais tarde"
             ], 500);
         }
     }
+
+  
 }

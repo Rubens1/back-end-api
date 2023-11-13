@@ -13,6 +13,7 @@ class PessoasEndereco extends Model
 
     protected $fillable = [
         "nome",
+        "identificacao",
         "id_pessoa",
         'situacao',
         'filial',
@@ -54,7 +55,7 @@ class PessoasEndereco extends Model
         'favorite' => 'boolean',
     ];
 
-    public function pessoa()
+    public function pessoas()
     {
         return $this->belongsTo(Pessoas::class, 'id_pessoa');
     }

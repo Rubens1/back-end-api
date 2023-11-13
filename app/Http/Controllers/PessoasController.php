@@ -12,7 +12,12 @@ use App\Models\{
 use DateTime;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\{Hash, Validator};
+use App\Helpers\Logger;
+use App\Models\RecuperarSenha;
+use App\Mail\SendPasswordMail;
+use App\Jobs\RecuperSenhaQueue;
 
 class PessoasController extends Controller
 {
@@ -21,32 +26,63 @@ class PessoasController extends Controller
      *
      * @return void
      */
+
+
     public function __construct()
     {
-        $this->middleware('auth:pessoas', ['except' => ['entrar', 'cadastro', 'listar', "listarPaginada", "cadastrarEndereco", "info"]]);
+        $this->middleware('auth:pessoas', [
+            'except' =>
+                ['entrar', 'cadastro', 'listar', "listarPaginada", "cadastrarEndereco", "enviarLinkDeRecupecaoDeSenha"]
+        ]);
     }
 
-
-     /**
-     * Lista de Pessoas em páginas.
-     *
+    /**
+     * Obtem o cliente pelo seu id
      */
-    public function listarPaginada(Request $request)
-    {
-        return Pessoas::where("is_client", true)->paginate($request->perPage ?? "10");
-    }
 
+    public function info(Request $request, $id)
+    {
+        $cliente = PessoasEndereco::where("id_pessoa", $id)->first();
+
+        $enderecos = PessoasEndereco::where("id_pessoa", $id)->get();
+
+        return response()->json([
+            "dados_pessoais" => $cliente,
+            "enderecos" => $enderecos
+        ]);
+    }
     /**
      * Lista de Pessoas.
      *
      */
+    public function listarPaginada(Request $request)
+    {
+        if ($request->query("with_partners") == true) {
+            return Pessoas::where("is_client", true, )->where("is_partner", true)->paginate($request->perPage ?? "10");
+        }
+
+        if ($request->query("with_afiliados") == true) {
+            return Pessoas::where("is_client", true, )->where("is_afiliado", true)->paginate($request->perPage ?? "10");
+        }
+
+        return Pessoas::where("is_client", true)->paginate($request->perPage ?? "10");
+    }
+
     public function listar(Request $request)
     {
-        $pessoas = Pessoas::where("is_client", true)->get();
+
+        if ($request->query("with_partners") == true) {
+            return Pessoas::where("is_partner", true, )->where("is_afiliado", true)->get();
+        }
+
+        if ($request->query("with_afiliados") == true) {
+            return Pessoas::where("is_client", true, )->where("is_afiliado", true)->get();
+        }
+
+        $pessoas = Pessoas::where("is_client", true, )->get();
 
         return response()->json($pessoas);
     }
-
     /**
      * Get a JWT via given credentials.
      *
@@ -81,14 +117,14 @@ class PessoasController extends Controller
 
         if (!$token) {
             return response()->json([
-                'status' => 'Error',
+                'status' => 'error',
                 'message' => 'Acesso negado',
             ], 401);
         }
 
         $pessoa = auth('pessoas')->user();
         return response()->json([
-            'status' => 'Success',
+            'status' => 'success',
             'pessoa' => $pessoa,
             'authorization' => [
                 'token' => $token,
@@ -113,7 +149,7 @@ class PessoasController extends Controller
             'email' => 'string|email|max:50|unique:pessoas',
             'signature_email' => 'string|email|max:50|unique:pessoas',
             'situacao' => 'string|between:1,100',
-            'cpfcnpj' => 'string|min:1|between:1,20',
+            'cpfcnpj' => 'unique:pessoas|string|min:1|between:1,20',
             'telefone' => 'string|between:1,100',
             'celular' => 'string|between:1,100',
             'razao_social' => 'nullable|string|between:1,100',
@@ -136,7 +172,6 @@ class PessoasController extends Controller
             'ccm' => 'nullable|string|between:1,100',
         ]);
 
-        //dd($validator);
         if ($validator->fails()) {
             return response()->json([
                 "errors" => $validator->errors()
@@ -144,10 +179,16 @@ class PessoasController extends Controller
         }
 
         try {
-            $pessoa = Pessoas::create(array_merge(
-                $request->all(),
-                ['senha' => bcrypt($request->senha)]
-            ))->fresh();
+            $pessoa = Pessoas::create(
+                array_merge(
+                    $request->all(),
+                    [
+                        'senha' => Hash::make($request->senha),
+                        "nome" => $request->razao_social ? $request->razao_social : $request->nome,
+                        "is_client" => true
+                    ]
+                )
+            )->fresh();
 
             return response()->json([
                 'message' => 'Usuario registrado com sucesso',
@@ -164,9 +205,17 @@ class PessoasController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function atualizarToken()
+    public function atualizarToken(Request $request)
     {
-        return auth('pessoas')->refresh();
+        try {
+            return auth('pessoas')->refresh();
+
+        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+            return response()->json([
+                "error" => $e->getMessage(),
+                "token" => $request->header("Authorization")
+            ]);
+        }
     }
 
     /**
@@ -189,42 +238,34 @@ class PessoasController extends Controller
 
         auth('pessoas')->logout();
         return response()->json([
-            'status' => 'Success',
+            'status' => 'success',
             'message' => 'Desconectado',
         ], 200);
     }
 
-    /**
-     * Informação individual de pessoa
-     *
-     */
-    public function info($id)
-    {
-        return Pessoas::findOrfail($id);
-    }
 
     /**
-     * Editar Cliente
-     *
+     * Edita os dados do cliente
      */
-    public function editarPessoa(Request $request, $id)
+    public function editarDadosCliente(Request $request, $id)
     {
         try {
             $validator = Validator::make($request->only("email", "cpfcnpj", "rg"), [
                 "email" => "email|unique:pessoas",
-                "rg" => "unique|pessoas",
+                "rg" => "unique:pessoas",
                 "cpfcnpj" => "unique:pessoas"
             ]);
 
-            if($validator->fails()) {
+
+            if ($validator->fails()) {
                 return response()->json([
                     "errors" => $validator->errors()
                 ], 400);
-            } 
+            }
 
             $cliente = Pessoas::where("id", $id)->first();
-           
-            if(!$cliente || $cliente == null) {
+
+            if (!$cliente || $cliente == null) {
                 return response()->json([
                     "errors" => [
                         "INDEX_DOES_NOT_EXISTS" => "O ídice fornecido não existe ou está ínvalido."
@@ -232,44 +273,31 @@ class PessoasController extends Controller
                 ]);
             }
 
+            $keys = [];
 
-            $cliente->nome = $request->nome ?? $cliente->nome;
-            $cliente->id_pai = $request->id_pai ?? $cliente->id_pai;
-            $cliente->alias = $request->alias ?? $cliente->alias;
-            $cliente->email = $request->email ?? $cliente->email;
-            $cliente->codigo = $request->codigo ?? $cliente->codigo;
-            $cliente->razao_social = $request->razao_social ?? $cliente->razao_social;
-            $cliente->signature_email = $request->signature_email ?? $cliente->signature_email;
-            $cliente->situacao = $request->situacao ?? $cliente->situacao;
-            $cliente->cpfcnpj = $request->cpfcnpj ?? $cliente->cpfcnpj;
-            $cliente->telefone = $request->telefone ?? $cliente->telefone;
-            $cliente->celular = $request->celular ?? $cliente->celular;
-            $cliente->cpf_responsavel = $request->cpf_responsavel ?? $cliente->cpf_responsavel;
-            $cliente->foto = $request->foto ?? $cliente->foto;
-            $cliente->ie = $request->ie ?? $cliente->ie;
-            $cliente->data_nasc = $request->data_nasc ?? $cliente->data_nasc;
-            $cliente->sexo = $request->sexo ?? $cliente->sexo;
-            $cliente->rg = $request->rg ?? $cliente->rg;
-            $cliente->orgao_emissor = $request->orgao_emissor ?? $cliente->orgao_emissor;
-            $cliente->estado_civil = $request->estado_civil ?? $cliente->estado_civil;
-            $cliente->obs = $request->obs ?? $cliente->obs;
-            $cliente->cod_rec = $request->cod_rec ?? $cliente->cod_rec;
-            $cliente->id_endereco_fiscal = $request->id_endereco_fiscal ?? $request->id_endereco_fiscal;
-            $cliente->signature_pwd = $request->signature_pwd  ?? $cliente->signature_pwd;
-            $cliente->comiss_elegivel = $request->comiss_elegivel ?? $cliente->comiss_elegivel;
-            $cliente->ccm = $request->ccm ?? $cliente->ccm;
+            foreach ($request->input() as $key => $value) {
+                array_push($keys, $key);
+            }
+
+            foreach ($keys as $k) {
+                $cliente->update([
+                    $k => $request->$k ?? $cliente->$k
+                ]);
+            }
 
             $cliente->save();
 
             return response()->json([
                 "message" => "Dados atualizados com sucesso",
-                "fresh" => $cliente
+                "fresh" => $cliente,
             ]);
-
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 "error" => $e->getMessage()
             ], 500);
         }
     }
+
+
+
 }

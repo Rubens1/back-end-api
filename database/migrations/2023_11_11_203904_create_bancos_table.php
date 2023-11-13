@@ -11,10 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('grupos', function (Blueprint $table) {
+        Schema::create('bancos', function (Blueprint $table) {
             $table->id();
-            $table->string('grupo', 255);
-            $table->longText('permissoes');
+            $table->string('pix', 255)->nullable();
+            $table->integer('agencia')->default(0);
+            $table->integer('conta')->default(0);
+            $table->string('validade', 10)->nullable();
+            $table->foreignId('id_pessoa')->references('id')->on('pessoas')->onDelete('cascade');
+
             $table->timestamps();
         });
     }
@@ -24,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('grupos');
+        Schema::dropIfExists('bancos');
     }
 };

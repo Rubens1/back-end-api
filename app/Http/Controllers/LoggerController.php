@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActionsHistory;
@@ -26,7 +26,7 @@ class LoggerController extends Controller
 
         if ($logs->count() == 0) {
             return response()->json([
-                "status" => "Error",
+                "status" => "error",
                 "message" => "Log não econtrado"
             ], 422);
         }

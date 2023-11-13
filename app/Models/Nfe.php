@@ -51,6 +51,7 @@ class NFE extends Model
         'amb' => 'integer',
         'nfe' => 'integer',
         'cStat' => 'integer',
+        // Add more castings for other fields as needed
     ];
 
     protected $dates = [

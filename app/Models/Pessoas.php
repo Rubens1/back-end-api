@@ -23,6 +23,10 @@ class Pessoas extends Authenticatable implements JWTSubject
      */
     protected $fillable = [
         'id_pai',
+        "is_client",
+        "is_afiliado",
+        "is_partner",
+        "verificou_senha",
         'cadastro_ativo',
         'codigo',
         'nome',
@@ -46,7 +50,7 @@ class Pessoas extends Authenticatable implements JWTSubject
         'obs',
         'cod_rec',
         'id_endereco_fiscal',
-        'id_clinte',
+        'id_cliente',
         'signature_pwd',
         'senha',
         'comiss_elegivel',
@@ -107,5 +111,15 @@ class Pessoas extends Authenticatable implements JWTSubject
     public function getAuthPassword()
     {
         return $this->senha;
+    }
+
+    public function contasBancarias()
+    {
+        return $this->hasMany(PessoasContas::class);
+    }
+
+    public function grupos()
+    {
+        return $this->hasMany(PessoasGrupos::class);
     }
 }

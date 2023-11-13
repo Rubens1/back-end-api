@@ -17,10 +17,10 @@ return new class extends Migration
             $table->string('ip', 18)->nullable();
             $table->string('obs', 255)->nullable()->default('NULL');
             $table->foreignId('id_action')->nullable()->references('id')->on('actions')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('id_pedido')->references('id')->on('pedidos')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('id_agente')->references('id')->on('pessoas')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('id_pessoa')->references('id')->on('pessoas')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('id_produto')->references('id')->on('produtos')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('id_pedido')->nullable()->references('id')->on('pedidos')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('id_agente')->nullable()->references('id')->on('pessoas')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('id_pessoa')->nullable()->references('id')->on('pessoas')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('id_produto')->nullable()->references('id')->on('produtos')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
 
             

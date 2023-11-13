@@ -18,6 +18,7 @@ return new class extends Migration
             $table->enum('situacao', ['A VENCER', 'PAGO', 'CANCELADO'])->nullable();
             $table->tinyInteger('parcela')->default(1);
             $table->timestamps();
+            $table->unique('id');
             $table->foreignId('id_pedido')->references('id')->on('pedidos')->onDelete('cascade')->onUpdate('cascade');
         });
     }

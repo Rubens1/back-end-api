@@ -21,27 +21,27 @@ class ActionsHistory extends Model
         "id_produto",
         "ip"
     ];
-    public function action()
+    public function actions()
     {
-        return $this->belongsTo(Action::class, 'id_action');
+        return $this->belongsTo(Actions::class, 'id_action');
     }
 
-    public function pedido()
+    public function pedidos()
     {
         return $this->belongsTo(Pedidos::class, 'id_pedido');
     }
 
-    public function agente()
+    public function agentes()
     {
         return $this->belongsTo(Pessoas::class, 'id_agente');
     }
 
-    public function pessoa()
+    public function pessoas()
     {
         return $this->belongsTo(Pessoas::class, 'id_pessoa');
     }
 
-    public function produto()
+    public function produtos()
     {
         return $this->belongsTo(Produtos::class, 'id_produto');
     }

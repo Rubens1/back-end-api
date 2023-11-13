@@ -64,12 +64,12 @@ class GerenciamentoPedidoController extends Controller
             $pedido->save();
 
             return response()->json([
-                "status" => "Success",
+                "status" => "success",
                 "message" => "Status do pedido atualizado para " . $request->sit_pedido
             ]);
         } catch (Exception $e) {
             return response()->json([
-                "status" => "Error",
+                "status" => "error",
                 "message" => "parametros invalidos"
             ]);
         }
@@ -114,14 +114,14 @@ class GerenciamentoPedidoController extends Controller
             );
 
             return response()->json([
-                "status" => "Success",
+                "status" => "success",
                 "message" => "Status de pedido atualizado para: " . $request->sit_pedido
             ]);
         } catch (Exception $e) {
             echo $e->getMessage();
 
             return response()->json([
-                "status" => "Error",
+                "status" => "error",
                 "message" => "parametros invalidos"
             ]);
         }
@@ -164,12 +164,12 @@ class GerenciamentoPedidoController extends Controller
             $pedido->save();
 
             return response()->json([
-                "status" => "Success",
+                "status" => "success",
                 "message" => "Status de pagamento atuaalizado"
             ]);
         } catch (Exception $e) {
             return response()->json([
-                "status" => "Error",
+                "status" => "error",
                 "message" => "parametros invalidos"
             ]);
         }
@@ -212,12 +212,12 @@ class GerenciamentoPedidoController extends Controller
             $pedido->save();
 
             return response()->json([
-                "status" => "Success",
+                "status" => "success",
                 "message" => "Status de pagamento atuaalizado para: " . $request->sit_producao . "."
             ]);
         } catch (Exception $e) {
             return response()->json([
-                "status" => "Error",
+                "status" => "error",
                 "message" => "parametros invalidos"
             ]);
         }

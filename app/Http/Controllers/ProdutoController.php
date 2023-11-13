@@ -10,30 +10,76 @@ use App\Models\{
     Estoque,
     Pessoas
 };
+use App\Helpers\{Logger, SlugHelper};
 
 use Exception;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\{Hash, Validator};
+use Illuminate\Support\Facades\{
+    Hash,
+    Validator
+};
 
 class ProdutoController extends Controller
 {
+    use Logger, SlugHelper;
     /**
      * Create a new AuthController instance.
      *
      * @return void
      */
-    public function __construct() {
-        $this->middleware('auth:pessoas', ['except' => ['listar']]);
+    public $pessoa;
+    public $logger;
+
+    public function __construct()
+    {
+        $this->middleware('auth:pessoas', ['except' => ['listarProdutos', "obterProduto", "listarEstoque"]]);
+
+        $this->pessoa = auth('pessoas')->user();
     }
 
     /**
      * Lista todos os produtos de forma paginada
      */
-    public function listar()
+
+
+    public function obterProduto(Request $request, $slug)
+    {
+        try {
+            $produto = Estoque::withWhereHas(
+                "produto",
+                function (Builder $query) use ($slug) {
+                    $query->where("src_alt", $slug);
+                }
+            )->first();
+
+            if (!$produto || $produto == null) {
+                return response()->json([
+                    "not_found" => true,
+                    "message" => "produto não econtrado"
+                ], 400);
+            }
+
+            return response()->json($produto);
+
+        } catch (Exception $e) {
+            return response()->json([
+                "error" => $e->getMessage(),
+                "message" => "Erro interno"
+            ], 500);
+        }
+    }
+
+    public function listarProdutos()
+    {
+        $produtos = Produtos::paginate(10);
+
+        return response()->json($produtos);
+    }
+    public function listarEstoque()
     {
 
-        $produtos = Produtos::paginate(10);
-        
+        $produtos = Estoque::with("produto")->paginate(10);
 
         return response()->json($produtos);
     }
@@ -84,22 +130,37 @@ class ProdutoController extends Controller
 
             ]);
 
-
             if ($validador->fails()) {
-                return response()->json(["errors" => $validador->errors()], 400);
+                return response()->json(["errors" => $validador->errors()], 422);
             }
 
-            Produtos::create($request->all());
+            $slug = ["src_alt" => $this->generateSlug($request->nome)];
+
+            $produto = Produtos::create(
+                array_merge(
+                    $request->all(),
+                    $slug
+                )
+            )->fresh();
+
+            $categoria = CategoriaProdutos::create([
+                "id_produto" => $produto->id ?? null,
+                "id_sub_categora" => $request->id_sub_categoria ?? null,
+                "id_categoria" => $request->id_categoria ?? null
+            ])->fresh();
 
             return response()->json([
-                "status" => "Success",
+                "status" => "success",
                 "message" => "produto cadastro com suscesso"
             ]);
+
 
         } catch (Exception $e) {
             return response()->json([
                 "error" => $e->getMessage(),
-                "status" => "Error",
+                "d" => $request->input(),
+                "s" => $produto,
+                "status" => "ERROR",
                 "message" => "Desculpe estamos enfrentando problemas internos."
             ], 500);
         }
@@ -112,11 +173,41 @@ class ProdutoController extends Controller
         $produto = Produtos::where("id", $id)->delete();
 
         return response()->json([
-            "status" => "Success",
+            "status" => "success",
             "message" => "Excluído com suscesso"
         ]);
     }
-    
+
+    /**
+     * 
+     */
+
+     public function obterProdutoRecomendado(Request $request)
+     {
+        try {
+            $produto = Estoque::withWhereHas(
+                "produto",
+                function (Builder $query) use ($request) {
+                    $query->where("id", $request->slug);
+                }
+            )->first();
+
+            if (!$produto || $produto == null) {
+                return response()->json([
+                    "not_found" => true,
+                    "message" => "produto não econtrado"
+                ], 400);
+            }
+
+            return response()->json($produto);
+
+        } catch (Exception $e) {
+            return response()->json([
+                "error" => $e->getMessage(),
+                "message" => "Erro interno"
+            ], 500);
+        }
+     }
     /**
      * Edita informações de um produto passando o id
      * passando ao menos algum campo para editar
@@ -124,76 +215,53 @@ class ProdutoController extends Controller
      */
     public function editarProduto(Request $request, $id_produto)
     {
-        $validador = Validator::make($request->all(), [
-            "sn" => "unique:produtos",
-            'ativo' => 'integer',
-            'nome' => 'string|unique:produtos',
-        ]);
-
-        if (count($request->input()) == 0) {
-            return response()->json([
-                "status" => "Error",
-                "message" => "Para editar o produto passe ao menos algum campo valído não passe campos vazios."
-            ], 400);
-        }
-
-        if ($validador->fails()) {
-            return response()->json($validador->errors());
-        }
-
-        $produto = Produtos::where("id", $id_produto)->first();
-
-        $produto->id_especializacao =  $request->id_especializacao ?? $produto->id_especializacao;
-        $produto->ativo = $request->ativo ??  $produto->ativo;
-        $produto->sn = $request->sn ?? $produto->sn;
-        $produto->nome = $request->nome ?? $produto->nome;
-        $produto->src_alt = $request->src_alt ?? $produto->src_alt;
-        $produto->proporcao_venda = $request->proporcao_venda ?? $produto->proporcao_venda;
-        $produto->proporcao_consumo = $request->proporcao_consumo ?? $produto->proporcao_consumo;
-        $produto->id_exclusivo = $request->id_exclusivo ?? $produto->id_exclusivo;
-        $produto->use_frete = $request->use_frete ?? $produto->use_frete;
-        $produto->prazo = $request->prazo ?? $produto->prazo;
-        $produto->show_in_cardpress = $request->show_in_cardpress ?? $produto->show_in_cardpress;
-        $produto->src = $request->src ?? $produto->src;
-        $produto->qminima = $request->qminima ?? $produto->qminima;
-        $produto->keywords = $request->keywords ?? $produto->keywords;
-        $produto->descricao = $request->descricao ?? $produto->descricao;
-        $produto->long_description = $request->long_description ?? $produto->long_description;
-        $produto->ficha_tecnica = $request->ficha_tecnica ?? $produto->ficha_tecnica;
-        $produto->itens_inclusos = $request->itens_inclusos ?? $produto->itens_inclusos;
-        $produto->opcoes = $request->opcoes  ?? $produto->opcoes;
-        $produto->opcoes_2 = $request->opcoes_2  ?? $produto->opcoes_2;
-        $produto->opcoes_3 = $request->opcoes_3  ?? $produto->opcoes_3;
-        $produto->altura = $request->altura ?? $produto->altura;
-        $produto->peso = $request->peso ?? $produto->peso;
-        $produto->largura = $request->largura ?? $produto->largura;
-        $produto->comprimento = $request->comprimento ?? $produto->comprimento;
-        $produto->origem = $request->origem ?? $produto->origem;
-        $produto->sub_tributaria = $request->sub_tributaria ?? $produto->sub_tributaria;
-        $produto->origem_noie = $request->origem_noie ?? $produto->origem_noie;
-        $produto->aliquota = $request->aliquota ?? $produto->aliquota;
-        $produto->publicar = $request->piblicar ?? $produto->publicar;
-        $produto->hits = $request->hits ?? $produto->hits;
-        $produto->id_foto_default = $request->id_foto_default ?? $produto->id_foto_default;
-        $produto->id_fabricante = $request->id_fabricante ?? $produto->id_fabricante;
-        $produto->id_produto_avulso = $request->id_produto_avulso ?? $produto->id_produto_avulso;
-        $produto->demo = $request->demo ?? $produto->demo;
-        $produto->gabarito = $request->ganarito ?? $produto->gabarito;
-
         try {
-            $produto->save();
+
+            $keys = [];
+
+            $validador = Validator::make($request->all(), [
+                "sn" => "unique:produtos",
+                'ativo' => 'integer',
+                'nome' => 'string|unique:produtos',
+            ]);
+
+
+            if (count($request->input()) == 0) {
+                return response()->json([
+                    "status" => "ERROR",
+                    "message" => "Para editar o produto passe ao menos algum campo valído não passe campos vazios."
+                ], 400);
+            }
+
+            if ($validador->fails()) {
+                return response()->json($validador->errors());
+            }
+
+            $produto = Produtos::where("id", $id_produto)->first();
+
+            foreach ($request->input() as $key => $value) {
+                array_push($keys, $key);
+            }
+
+            foreach ($keys as $key) {
+                $produto->update([
+                    $key => $request->$key ?? $produto->$key
+                ]);
+            }
+
+            $produto->save()->fresh();
 
             return response()->json([
-                "status" => "Success",
-                "message" => "Produto atualizado com suscesso."
+                "message" => "Dados do produto atualizados",
+                "fresh" => $produto
             ]);
+
+
         } catch (Exception $e) {
             return response()->json([
-                "status" => "Error",
+                "status" => "ERROR",
                 "message" => "Erro interno"
             ], 500);
         }
     }
-
-    
 }

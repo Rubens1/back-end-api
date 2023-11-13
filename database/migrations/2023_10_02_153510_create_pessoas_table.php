@@ -19,7 +19,10 @@ class CreatePessoasTable extends Migration
             $table->boolean('cadastro_ativo')->default(1);
             $table->string('codigo', 8)->nullable();
             $table->string('nome', 100);
+            $table->boolean("verificou_senha")->nullable()->default(true);
             $table->integer("is_client")->nullable()->default(1);
+            $table->boolean("is_afiliado")->nullable()->default(0);
+            $table->boolean("is_partner")->nullable()->default(0);
             $table->string('alias', 120)->nullable();
             $table->string('email', 60)->unique();
             $table->string('signature_email', 50)->nullable()->unique();
@@ -42,8 +45,9 @@ class CreatePessoasTable extends Migration
             $table->integer('id_endereco_fiscal')->nullable();
             $table->integer('id_cliente')->nullable();
             $table->string('signature_pwd', 50)->nullable();
-            $table->string('senha');
+            $table->string('senha')->nullable();
             $table->tinyInteger('comiss_elegivel')->default(0);
+            $table->integer("permissoes")->default(3);
             $table->string('ccm', 15)->nullable();
             $table->timestamps();
             $table->softDeletes();

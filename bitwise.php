@@ -1,16 +1,15 @@
-<?php 
+<?php
+$currentDateTime = new DateTime();
+$currentDateTime2 = new DateTime();
 
-(int)$permissions = [
-    'read' => 1,
-    'update' => 2,
-    'edit' => 3,
-    'delete' => 4
-];
+$interval = new DateInterval('PT2H');
 
-$user = $permissions["read"];
+$currentDateTime->add($interval);
 
-$user |= $permissions['delete'];
+$formattedDateTime = $currentDateTime->format('d-m-Y H:i:s');
 
-if($user & $permissions['delete']) {
-    echo "Pode";
+if($formattedDateTime > $currentDateTime2->format("d-m-Y H:i:s")) {
+    echo true;
+} else {
+    echo false;
 }

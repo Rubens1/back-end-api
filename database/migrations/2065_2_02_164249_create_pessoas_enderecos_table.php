@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->enum('situacao', ['Ativo', 'Inativo'])->default('Ativo');
             $table->string('filial', 60)->nullable();
+            $table->string("identificacao")->nullable();
+            $table->boolean("principal")->nullable()->default(false);
             $table->string('logradouro', 100)->nullable();
             $table->string('numero', 20)->nullable();
             $table->string('complemento', 45)->nullable();
