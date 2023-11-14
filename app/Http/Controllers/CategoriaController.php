@@ -87,6 +87,7 @@ class CategoriaController extends Controller
             ], 500);
         }
     }
+
     /**
      * Cria uma categoria.
      */
@@ -122,6 +123,21 @@ class CategoriaController extends Controller
         }
     }
 
+    /**
+     * Mostra info de uma categoria pegando o id
+     */
+    public function subcategorias($id)
+    {
+        $categoria = Categorias::where('categorias.id_categoria', '=', $id)
+            ->select('categorias.*')
+            ->get();
+
+        return $categoria;
+    }
+
+    /**
+     * Obter a categoria por produto.
+     */
     public function obterCategoriaPorProduto(Request $request, $productId)
     {
         $categorias = DB::table('categorias')

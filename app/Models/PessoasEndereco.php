@@ -49,6 +49,7 @@ class PessoasEndereco extends Model
         'referencia',
         'id_matriz',
         'faz_entrega_ex',
+        'principal',
     ];
 
     protected $casts = [

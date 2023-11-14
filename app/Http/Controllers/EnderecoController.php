@@ -52,6 +52,7 @@ class EnderecoController extends Controller
             'referencia' => 'nullable|string|max:255',
             'id_matriz' => 'integer|nullable',
             'faz_entrega_ex' => 'string|size:8',
+            'principal' => 'boolean',
             'id_pessoa' => 'required|exists:pessoas,id',
         ]);
 
@@ -62,11 +63,13 @@ class EnderecoController extends Controller
         }
 
         try {
+            //return response()->json($request->input());
             $endereco = PessoasEndereco::create(
                 array_merge(
                     $validator->validated(),
                     [
-                        "situacao" => "Ativo"
+                        "situacao" => "Ativo",
+                        //"principal" => false
                     ]
                 )
             )->fresh();
@@ -168,5 +171,90 @@ class EnderecoController extends Controller
         }
     }
 
-  
+  /**
+     * Deletar registro pelo id
+     */
+    public function excluir($id)
+    {
+        $res = PessoasEndereco::where('id', $id)->delete();
+
+        if ($res) {
+            $data = [
+                'status' => '1',
+                'msg' => 'Endereco excluida com sucesso'
+            ];
+        } else {
+            $data = [
+                'status' => '0',
+                'msg' => 'Falha em excluir o endereco'
+            ];
+        }
+        return response()->json($data);
+    }
+
+    /**
+     * Desativar endereço pelo id do endereço
+     */
+    public function desativaEndereco(Request $request, $id)
+    {
+        try {
+
+            if (count($request->input()) == 0) {
+                return response()->json([
+                    "status" => "ERROR",
+                    "message" => "Não foi possivel excluir o edereço no momento"
+                ], 400);
+            }
+
+            $endereco = PessoasEndereco::where("id", $id)->first();
+
+            $endereco->situacao = $request->situacao ?? $endereco->situacao;
+
+            $endereco->save();
+
+            return response()->json([
+                "message" => "Enderecço excluido com sucesso.",
+                "fresh" => $endereco
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                "error" => $e->getMessage(),
+                "message" => "Erro interno tente mais tarde"
+            ], 500);
+        }
+    }
+
+    /**
+     * Endereço principal pelo id
+     */
+    public function principalEndereco(Request $request, $id)
+    {
+        try {
+
+            if (count($request->input()) == 0) {
+                return response()->json([
+                    "status" => "ERROR",
+                    "message" => "Falha no sistema"
+                ], 400);
+            }
+
+            $endereco = PessoasEndereco::where("id", $id)->first();
+
+            $endereco->principal = $request->principal ?? $endereco->principal;
+
+            $endereco->save();
+
+            return response()->json([
+                "message" => "Enderecço principal.",
+                "fresh" => $endereco
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                "error" => $e->getMessage(),
+                "message" => "Erro interno tente mais tarde"
+            ], 500);
+        }
+    }
 }

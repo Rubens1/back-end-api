@@ -58,11 +58,8 @@ Route::group(["prefix" => "colaboradores"], function() {
 Route::post("/recuperar-senha", [SenhaController::class, "enviarLinkDeRecupecaoDeSenha"]);
 Route::post("/verificar-token-senha", [SenhaController::class, "verificarTokenDeRecuperacaoDeSenha"]);
 Route::post("/alterar-senha", [SenhaController::class, "recuperarSenha"]);
-/**
- * Categorias
- */
-Route::get("/categorias", [CategoriaController::class, "listar"]);
-Route::get("/categoria-produto/{produto_id}", [CategoriaController::class, "obterCategoriaPorProduto"]);
+
+
 /**
  * Produtos público
  */
@@ -87,15 +84,19 @@ Route::get("/enderecos-cliente/{id}", [EnderecoController::class, "obterListaDeE
 Route::get("/endereco/{id}", [EnderecoController::class, "obterEnderecoPeloId"]);
 Route::post("/cadastrar-endereco-cliente", [EnderecoController::class, "cadastrarEndereco"]);
 Route::put("/editar-endereco/{id}", [EnderecoController::class, "editarEndereco"]);
+Route::put("/desativa-endereco/{id}", [EnderecoController::class, "desativaEndereco"]);
+Route::put("/principal-endereco/{id}", [EnderecoController::class, "principalEndereco"]);
+Route::delete("/excluir-endereco/{id}", [EnderecoController::class, "excluir"]);
+
 /**
  * Categoria Controller
  */
 Route::post("/cadastrar-categoria", [CategoriaController::class, "criarCategoria"]);
-Route::post("/cadastrar-endereco");
 Route::delete("/excluir-categoria/{id}", [CategoriaController::class, "excluir"]);
 Route::get("/categorias/{id}", [CategoriaController::class, "info"]);
 Route::put("/editar-categoria/{id}", [CategoriaController::class, "editar"]);
-
+Route::get("/categoria-produto/{produto_id}", [CategoriaController::class, "obterCategoriaPorProduto"]);
+Route::get("/subcategorias/{id}", [CategoriaController::class, "subcategorias"]);
 
 //Nota fiscal
 Route::get('/nfe', [NfeController::class, 'listar']);
@@ -159,6 +160,7 @@ Route::group([], function () {
     Route::post("/edit-role", [PermissaoController::class, "editRole"]);
     
 });
+
 
 //Contatos
 Route::get("/contatos/{id_pessoa}", [ContatosController::class, "lista"]);

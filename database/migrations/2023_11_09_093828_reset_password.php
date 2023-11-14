@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bancos', function (Blueprint $table) {
+        Schema::create('reset_password', function (Blueprint $table) {
             $table->id();
-            $table->string('pix', 255)->nullable();
-            $table->string('agencia', 15)->default(0);
-            $table->string('conta', 20)->default(0);
-            $table->string('validade', 10)->nullable();
-            $table->foreignId('id_pessoa')->references('id')->on('pessoas')->onDelete('cascade');
-
+            $table->string("uuid");
+            $table->string("expira_em");
+            $table->foreignId("id_pessoa")->references("id")->on("pessoas");
             $table->timestamps();
         });
     }
@@ -28,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bancos');
+        Schema::dropIfExists('reset_password');
     }
 };

@@ -14,9 +14,27 @@ class BancoController extends Controller
      */
     public function lista(Request $request, $id_pessoa)
     {
-        $banco = Bancos::where("id_pessoa", $id_pessoa)->first();
-
-        return response()->json($banco);
+        try {
+            $banco = Bancos::where("id_pessoa", $id_pessoa)->first();
+    
+            if($banco->count() == 0) {
+                return response()->json([
+                    "status" => "error",
+                    "message" => "Usuário não possui nenhum dados bancario cadastrado."
+                ], 400);
+            }
+    
+            return response()->json([
+                "data" => $banco,
+                "quantidade" => $banco->count()
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                "status" => "error",
+                "message" => "Desculpe estamos enfrentado problemas internos.",
+                "error" => $e->getMessage()
+            ]);   
+        }
     }
 
     /**
@@ -27,6 +45,7 @@ class BancoController extends Controller
             'pix' => 'string|max:255',
             'agencia' => 'string|max:255',
             'conta' => 'string|max:255',
+            'validade' => 'string|max:255',
             'id_pessoa' => 'required|exists:pessoas,id',
         ]);
 
@@ -52,7 +71,7 @@ class BancoController extends Controller
                 "status" => "error",
                 "message" => "Desculpe estamos enfrentado problemas internos.",
                 "error" => $e->getMessage()
-            ]);  
+            ], 500);  
     }
    }
     /**
@@ -71,13 +90,13 @@ class BancoController extends Controller
 
         return response()->json([
             "message" => "Dados atualizados com sucesso",
-            "fresh" => $contato
-        ]);
+            "data" => $banco
+        ],200);
 
     } catch (Exception $e) {
         return response()->json([
             "error" => $e->getMessage()
-        ], 500);
+        ],500);
     }
    }
 

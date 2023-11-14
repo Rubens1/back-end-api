@@ -14,11 +14,28 @@ class ContatosController extends Controller
      */
      public function lista(Request $request, $id_pessoa)
      {
-         $contatos = Contatos::where("id_pessoa", $id_pessoa)->first();
- 
-         return response()->json($contatos);
-     }
-
+        try {
+            $contatos = Contatos::where("id_pessoa", $id_pessoa)->get();
+    
+            if($contatos->count() == 0) {
+               return response()->json([
+                   "status" => "error",
+                   "message" => "Usuário não possui nenhum contato cadastrado."
+               ], 400);
+           }
+   
+            return response()->json([
+               "data" => $contatos,
+               "quantidade" => $contatos->count()
+           ], 200);
+        }catch (Exception $th) {
+            return response()->json([
+                "status" => "error",
+                "message" => "Desculpe estamos enfrentado problemas internos.",
+                "error" => $e->getMessage()
+            ]);   
+        }
+    }
      /**
      * Cadastro de contato
      */
@@ -57,7 +74,8 @@ class ContatosController extends Controller
                 "status" => "error",
                 "message" => "Desculpe estamos enfrentado problemas internos.",
                 "error" => $e->getMessage()
-            ]);        }
+            ]);       
+        }
     }
 
      /**
@@ -77,8 +95,8 @@ class ContatosController extends Controller
 
             return response()->json([
                 "message" => "Dados atualizados com sucesso",
-                "fresh" => $contato
-            ]);
+                "data" => $contato
+            ],200);
 
         } catch (Exception $e) {
             return response()->json([
@@ -104,7 +122,7 @@ class ContatosController extends Controller
             return response()->json([
                 "message" => "Dados atualizados com sucesso",
                 "fresh" => $contato
-            ]);
+            ],200);
 
         } catch (Exception $e) {
             return response()->json([
