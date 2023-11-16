@@ -298,6 +298,32 @@ class PessoasController extends Controller
         }
     }
 
+    public static function atualizarSenha(Request $request, $id){
+        try {
 
+           $cliente = Pessoas::where("id", $id)->first();
+
+            if (password_verify($request->senha_atual, $cliente->senha)) {
+                $resposta = "Senha atualizada com sucesso.";
+                $cliente->senha = Hash::make($request->senha);
+                $cliente->save();
+                return response()->json([
+                    'status' => 'success',
+                    'message' => $resposta,
+                ], 200);
+            }else{
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Senha atual invalida',
+                ], 400);
+            }
+           
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => "Erro no servidor",
+            ], 500);
+        }
+    }
 
 }

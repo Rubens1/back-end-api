@@ -81,7 +81,7 @@ class SenhaController extends Controller
                 "expira_em" => $date_time->format("d-m-Y H:i")
             ]);
 
-            $link = "http://localhost:3000/recuperar-senha/$token";
+            $link = "$request->url/$token";
 
             RecuperSenhaQueue::dispatchAfterResponse(
                 $cliente->email,

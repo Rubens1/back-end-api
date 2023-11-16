@@ -78,20 +78,19 @@ class EnderecoController extends Controller
                 "status" => "success",
                 "message" => "Endereço cadastrado",
                 "endereco" => $endereco
-            ]);
+            ], 200);
         } catch (Exception $e) {
             return response()->json([
                 "status" => "error",
                 "message" => "Desculpe estamos enfrentado problemas internos.",
                 "error" => $e->getMessage()
-            ]);
+            ], 500);
         }
     }
 
     /**
      * Obtem os enderecos do cliente pelo id do cliente 
      */
-
     public function obterListaDeEnderecosDoCliente(Request $request, $id)
     {
         try {
@@ -120,7 +119,6 @@ class EnderecoController extends Controller
     /**
      * Obtem o endereco do cliente pelo Id
      */
-
     public function obterEnderecoPeloId(Request $request, $id)
     {
         $endereco = PessoasEndereco::where("id", $id)->first();
@@ -171,7 +169,7 @@ class EnderecoController extends Controller
         }
     }
 
-  /**
+    /**
      * Deletar registro pelo id
      */
     public function excluir($id)

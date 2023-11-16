@@ -42,6 +42,7 @@ Route::post('/pessoa-entrar', [PessoasController::class, 'entrar']);
 Route::put('/pessoa-atualizar', [PessoasController::class, 'atualizarToken']);
 Route::post('/pessoa-cadastro', [PessoasController::class, 'cadastro']);
 Route::get("/list-all-roles", [PermissaoController::class, "listAllRoles"]);
+Route::put("/atualizar-senha/{id}", [PessoasController::class, "atualizarSenha"]);
 
 /**
  * Colaborador
@@ -94,6 +95,7 @@ Route::delete("/excluir-endereco/{id}", [EnderecoController::class, "excluir"]);
 Route::post("/cadastrar-categoria", [CategoriaController::class, "criarCategoria"]);
 Route::delete("/excluir-categoria/{id}", [CategoriaController::class, "excluir"]);
 Route::get("/categorias/{id}", [CategoriaController::class, "info"]);
+Route::get("/categorias", [CategoriaController::class, "listar"]);
 Route::put("/editar-categoria/{id}", [CategoriaController::class, "editar"]);
 Route::get("/categoria-produto/{produto_id}", [CategoriaController::class, "obterCategoriaPorProduto"]);
 Route::get("/subcategorias/{id}", [CategoriaController::class, "subcategorias"]);

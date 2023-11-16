@@ -63,7 +63,6 @@ class Pessoas extends Authenticatable implements JWTSubject
      * @var array<int, string>
      */
     protected $hidden = [
-        'senha',
         'remember_token',
     ];
 
