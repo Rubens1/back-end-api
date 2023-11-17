@@ -19,8 +19,8 @@ use App\Http\Controllers\{
     ColaboradorController,
     ColaboradorLoginController,
     ContatosController,
-    BancoController
-
+    BancoController,
+    PixController
 };
 use Stevebauman\Location\Facades\Location;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -175,3 +175,6 @@ Route::get("/banco/{id_pessoa}", [BancoController::class, "lista"]);
 Route::post('/cadastrar-banco', [BancoController::class, 'cadastrar']);
 Route::put("/editar-banco/{id}", [BancoController::class, "editar"]);
 Route::delete("/deletar-banco/{id}", [BancoController::class, "excluir"]);
+
+//Pagamento
+Route::post("/pix", [PixController::class, "generateQrCode"]);
