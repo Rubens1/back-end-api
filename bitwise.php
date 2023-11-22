@@ -1,15 +1,15 @@
 <?php
-$currentDateTime = new DateTime();
-$currentDateTime2 = new DateTime();
+require_once('vendor/autoload.php');
 
-$interval = new DateInterval('PT2H');
+$client = new \GuzzleHttp\Client();
 
-$currentDateTime->add($interval);
+$response = $client->request('POST', 'https://api.stage.cora.com.br/invoices/', [
+  'body' => '{"code":"meu_id","customer":{"name":"Fulano da Silva","e-mail":"fulano@email.com","document":{"identity":"34052649000178","type":"CNPJ"},"address":{"street":"Rua Gomes de Carvalho","number":"1629","district":"Vila Olímpia","city":"São Paulo","state":"SP","complement":"N/A","zip_code":"00111222"}},"payment_terms":{"due_date":"2023-12-12","fine":{"amount":200},"discount":{"type":"PERCENT","value":10}},"payment_forms":["PIX"]}',
+  'headers' => [
+    'Idempotency-Key' => 'int-lODQwR7VgffEWdYjrxQRs',
+    'accept' => 'application/json',
+    'content-type' => 'application/json',
+  ],
+]);
 
-$formattedDateTime = $currentDateTime->format('d-m-Y H:i:s');
-
-if($formattedDateTime > $currentDateTime2->format("d-m-Y H:i:s")) {
-    echo true;
-} else {
-    echo false;
-}
+echo $response->getBody();

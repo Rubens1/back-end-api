@@ -3,25 +3,43 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 //Controllers
-use App\Http\Controllers\{
+use App\Http\Controllers\Pagamento\{
+    PixController,
+    CartaoController
+};
+
+use App\Http\Controllers\Site\{
+    BlogController,
+    CarrinhoController,
+    CategoriaController,
+    ProdutoController,
+    TagController
+};
+
+use App\Http\Controllers\Global\{
+    ValidacaoController,
+    PessoasController,
+    SenhaController
+};
+
+use App\Http\Controllers\Admin\{
+    ColaboradorController,
+    GerenciamentoPedidoController,
+    PermissaoController,
+    NfeController,
+    EstoqueController,
     LoggerController,
+    ColaboradorLoginController   
+
+};
+
+use App\Http\Controllers\Client\{
+    BancoController,
     EnderecoController,
     PedidoController,
-    GerenciamentoPedidoController,
-    NFEController,
-    CategoriaController,
-    EstoqueController,
-    PessoasController,
-    ProdutoController,
-    ValidacaoController,
-    SenhaController,
-    PermissaoController,
-    ColaboradorController,
-    ColaboradorLoginController,
-    ContatosController,
-    BancoController,
-    PixController
+    ContatosController
 };
+
 use Stevebauman\Location\Facades\Location;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -86,7 +104,7 @@ Route::get("/endereco/{id}", [EnderecoController::class, "obterEnderecoPeloId"])
 Route::post("/cadastrar-endereco-cliente", [EnderecoController::class, "cadastrarEndereco"]);
 Route::put("/editar-endereco/{id}", [EnderecoController::class, "editarEndereco"]);
 Route::put("/desativa-endereco/{id}", [EnderecoController::class, "desativaEndereco"]);
-Route::put("/principal-endereco/{id}", [EnderecoController::class, "principalEndereco"]);
+Route::put("/principal-endereco/{id}/{id_pessoa}", [EnderecoController::class, "principalEndereco"]);
 Route::delete("/excluir-endereco/{id}", [EnderecoController::class, "excluir"]);
 
 /**
@@ -178,3 +196,4 @@ Route::delete("/deletar-banco/{id}", [BancoController::class, "excluir"]);
 
 //Pagamento
 Route::post("/pix", [PixController::class, "generateQrCode"]);
+Route::post("/mercado-pago", [CartaoController::class, "mercadoPago"]);
