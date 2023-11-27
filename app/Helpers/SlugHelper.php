@@ -32,6 +32,7 @@ trait SlugHelper
         $str = preg_replace('/(-[-]{1,})/', '-', $str);
         $str = preg_replace('/(,)/', '-', $str);
         $str = strtolower($str);
+        
         return $str;
     }
 

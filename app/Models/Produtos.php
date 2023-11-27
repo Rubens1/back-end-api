@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Produtos extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'produtos';
 
@@ -19,6 +20,8 @@ class Produtos extends Model
         'id_produto',
         'nome',
         'src_alt',
+        'src_imagens',
+        'cover',
         'proporcao_venda',
         'proporcao_consumo',
         'id_exclusivo',
@@ -26,6 +29,7 @@ class Produtos extends Model
         'prazo',
         'show_in_cardpress',
         'src',
+        'url',
         'qminima',
         'keywords',
         'descricao',

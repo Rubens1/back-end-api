@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Produtos;
 
 use App\Http\Controllers\Controller;
 use App\Helpers\Logger;
@@ -9,7 +9,8 @@ use App\Models\{
     Produtos,
     Estoque,    
     Actions,
-    ActionsHistory
+    ActionsHistory,
+    ProdutoCatalogo
 };
 use Exception;
 use GuzzleHttp\Promise\Create;
@@ -24,7 +25,6 @@ class EstoqueController extends Controller
     {
         $this->middleware('auth:pessoas');
     }
-
 
     public function ObterEstoque(Request $request)
     {
@@ -69,7 +69,6 @@ class EstoqueController extends Controller
         ]);
 
 
-
         if (count($request->input()) == 0) {
             return response()->json([
                 "status" => "ERROR",
@@ -106,12 +105,19 @@ class EstoqueController extends Controller
                 ]
             );
 
-            Estoque::create($data);
+            $estoque = Estoque::create($data)->fresh();
 
+            $catalogo = ProdutoCatalogo::where("produto_id", $request->id_produto)->first();
+
+            $catalogo->estoque_id = $estoque->id;
+
+            $catalogo->save();
+            
             return response()->json([
                 "status" => "success",
                 "message" => "Produto adicionado ao estoque"
             ]);
+            
         } catch (Exception $e) {
 
             return response()->json([

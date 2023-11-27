@@ -12,14 +12,15 @@ use App\Http\Controllers\Site\{
     BlogController,
     CarrinhoController,
     CategoriaController,
-    ProdutoController,
-    TagController
+    TagController,
+    ProdutoController
 };
 
 use App\Http\Controllers\Global\{
     ValidacaoController,
     PessoasController,
-    SenhaController
+    SenhaController,
+    ProjetoController
 };
 
 use App\Http\Controllers\Admin\{
@@ -27,7 +28,6 @@ use App\Http\Controllers\Admin\{
     GerenciamentoPedidoController,
     PermissaoController,
     NfeController,
-    EstoqueController,
     LoggerController,
     ColaboradorLoginController   
 
@@ -40,6 +40,10 @@ use App\Http\Controllers\Client\{
     ContatosController
 };
 
+use App\Http\Controllers\Produtos\{
+    EstoqueController,
+    CatalogoController
+};
 use Stevebauman\Location\Facades\Location;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -115,8 +119,10 @@ Route::delete("/excluir-categoria/{id}", [CategoriaController::class, "excluir"]
 Route::get("/categorias/{id}", [CategoriaController::class, "info"]);
 Route::get("/categorias", [CategoriaController::class, "listar"]);
 Route::put("/editar-categoria/{id}", [CategoriaController::class, "editar"]);
+Route::get("/listar-categorias", [CategoriaController::class, "listarCategorias"]);
 Route::get("/categoria-produto/{produto_id}", [CategoriaController::class, "obterCategoriaPorProduto"]);
 Route::get("/subcategorias/{id}", [CategoriaController::class, "subcategorias"]);
+
 
 //Nota fiscal
 Route::get('/nfe', [NfeController::class, 'listar']);
@@ -197,3 +203,29 @@ Route::delete("/deletar-banco/{id}", [BancoController::class, "excluir"]);
 //Pagamento
 Route::post("/pix", [PixController::class, "generateQrCode"]);
 Route::post("/mercado-pago", [CartaoController::class, "mercadoPago"]);
+
+//Projetos
+Route::group([], function() {
+    Route::post("/criar-projeto", [ProjetoController::class, "criarProjeto"]);
+    Route::get("/ler-projetos/{id}", [ProjetoController:: class, "lerProjetos"]);
+    Route::post("/salvar-projeto", [ProjetoController::class, "salvarProjeto"]);
+    Route::delete("/excluir-projeto", [ProjetoController::class, "excluir-projeto"]);
+});
+//Catalogo
+Route::group([], function() { 
+    Route::get("/catalogo", [CatalogoController::class, "obterCatalogo"]);
+    Route::get("/catalogo/{id}", [CatalogoController::class, "obterProduto"]);
+    Route::get("/catalogo-estoque", [CatalogoController::class, "obterCatalogoComEstoque"]);
+    Route::post("/itens-carrinho", [CatalogoController::class, "obterItensCarrinho"]);
+    Route::get("/catalogo-estoque/{categoria}", [CatalogoController::class, "obterPorCategoria"]);
+    //Route::get("/price-range", CatalogoController::class, "precoMaxMin"]);
+});
+
+Route::get("/teste", function(Request $request) {
+    return response()->json([
+        "IP" => $request->ip()
+    ]);
+});
+
+Route::post("/cora", [\App\Http\Controllers\Pagamento\CoraController::class, "token"]);
+Route::post("/pix", [\App\Http\Controllers\Pagamento\CoraController::class, "pix"]);

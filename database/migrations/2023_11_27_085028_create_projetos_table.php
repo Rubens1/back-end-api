@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('reset_password', function (Blueprint $table) {
+        Schema::create('projetos', function (Blueprint $table) {
             $table->id();
-            $table->string("uuid");
-            $table->string("expira_em");
-            $table->foreignId("id_pessoa")->references("id")->on("pessoas");
             $table->timestamps();
         });
     }
@@ -25,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('reset_password');
+        Schema::dropIfExists('projetos');
     }
 };
