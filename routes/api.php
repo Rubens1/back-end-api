@@ -5,24 +5,26 @@ use Illuminate\Support\Facades\Route;
 //Controllers
 use App\Http\Controllers\Pagamento\{
     PixController,
-    CartaoController
+    CartaoController,
+    CoraController
 };
 
 use App\Http\Controllers\Site\{
     BlogController,
     CarrinhoController,
     CategoriaController,
-    TagController,
-    ProdutoController
+    ProdutoController,
+    TagController
 };
 
 use App\Http\Controllers\Global\{
     ValidacaoController,
     PessoasController,
-    SenhaController,
-    ProjetoController
+    SenhaController
 };
-
+use App\Http\Controllers\Frete\{
+    MelhorEnvioController
+};
 use App\Http\Controllers\Admin\{
     ColaboradorController,
     GerenciamentoPedidoController,
@@ -44,6 +46,7 @@ use App\Http\Controllers\Produtos\{
     EstoqueController,
     CatalogoController
 };
+
 use Stevebauman\Location\Facades\Location;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -66,33 +69,31 @@ Route::post('/pessoa-cadastro', [PessoasController::class, 'cadastro']);
 Route::get("/list-all-roles", [PermissaoController::class, "listAllRoles"]);
 Route::put("/atualizar-senha/{id}", [PessoasController::class, "atualizarSenha"]);
 
-/**
- * Colaborador
- */
+//Colaborador
 Route::group(["prefix" => "colaboradores"], function() {
     Route::post("/cadastrar", [ColaboradorController::class, "cadastrarColaborador"]);
     Route::post("/login", [ColaboradorLoginController::class, "login"]);
 });
 
-
-/**
- * Senhas
- */
+//Senhas
 Route::post("/recuperar-senha", [SenhaController::class, "enviarLinkDeRecupecaoDeSenha"]);
 Route::post("/verificar-token-senha", [SenhaController::class, "verificarTokenDeRecuperacaoDeSenha"]);
 Route::post("/alterar-senha", [SenhaController::class, "recuperarSenha"]);
 
-
-/**
- * Produtos público
- */
+//Produtos público
 Route::get("/produtos", [ProdutoController::class, "listarProdutos"]);
 Route::get("/estoque", [ProdutoController::class, "listarEstoque"]);
 Route::get("/produto/{slug}", [ProdutoController::class, "obterProduto"]);
 
-/**
- * Pessoas
- */
+//Estoque   
+Route::get("/estoque-lista", [EstoqueController::class, "obterEstoque"]);
+Route::post("/registrar-produto-em-estoque", [EstoqueController::class, "registrarProdutoEmEstoque"]);
+Route::put("/retirar-produto-do-estoque/{id_produto}", [EstoqueController::class, "retirarProdutoEstoque"]);
+Route::put("/adicionar-no-estoque/{id_produto}", [EstoqueController::class, "adicionarAoEstoque"]);
+Route::put("/editar-estoque/{id_produto}", [EstoqueController::class, "editarEstoque"]);
+
+
+//Pessoas
 Route::post('/pessoa-sair', [PessoasController::class, 'sair']);
 Route::get('/pessoa-perfil', [PessoasController::class, 'pessoaPerfil']);
 Route::get('/pessoas-lista-paginada', [PessoasController::class, 'listarPaginada']);
@@ -100,47 +101,39 @@ Route::get("/pessoas-lista", [PessoasController::class, "listar"]);
 Route::get("/pessoa/{id}", [PessoasController::class, "info"]);
 Route::put("/editar-pessoa/{id}", [PessoasController::class, "editarDadosCliente"]);
 
-/**
- * Endereços
- */
+
+//Endereços
 Route::get("/enderecos-cliente/{id}", [EnderecoController::class, "obterListaDeEnderecosDoCliente"]);
 Route::get("/endereco/{id}", [EnderecoController::class, "obterEnderecoPeloId"]);
 Route::post("/cadastrar-endereco-cliente", [EnderecoController::class, "cadastrarEndereco"]);
 Route::put("/editar-endereco/{id}", [EnderecoController::class, "editarEndereco"]);
 Route::put("/desativa-endereco/{id}", [EnderecoController::class, "desativaEndereco"]);
 Route::put("/principal-endereco/{id}/{id_pessoa}", [EnderecoController::class, "principalEndereco"]);
-Route::delete("/excluir-endereco/{id}", [EnderecoController::class, "excluir"]);
+Route::put("/excluir-endereco/{id}", [EnderecoController::class, "excluir"]);
 
-/**
- * Categoria Controller
- */
+
+//Categoria
 Route::post("/cadastrar-categoria", [CategoriaController::class, "criarCategoria"]);
 Route::delete("/excluir-categoria/{id}", [CategoriaController::class, "excluir"]);
 Route::get("/categorias/{id}", [CategoriaController::class, "info"]);
 Route::get("/categorias", [CategoriaController::class, "listar"]);
 Route::put("/editar-categoria/{id}", [CategoriaController::class, "editar"]);
-Route::get("/listar-categorias", [CategoriaController::class, "listarCategorias"]);
 Route::get("/categoria-produto/{produto_id}", [CategoriaController::class, "obterCategoriaPorProduto"]);
 Route::get("/subcategorias/{id}", [CategoriaController::class, "subcategorias"]);
-
 
 //Nota fiscal
 Route::get('/nfe', [NfeController::class, 'listar']);
 Route::post('/registrar-nfe', [NfeController::class, 'registrar']);
 Route::get('/nfe/{id}', [NfeController::class, 'info']);
 
-/***
- * Retorna todos os pedidos de forma resumida e paginada.
- */
+
+//Retorna todos os pedidos de forma resumida e paginada.
 Route::get("/lista/pedidos/", [PedidoController::class, "listar"]);
 Route::get("/lista/pedidos/cliente/{cliente_id}", [PedidoController::class, "listaPorClienteId"]);
 Route::get("/lista/vendas/{vendedor_id}", [PedidoController::class, "listarPorVendedorId"]);
 Route::get("/lista/pedidos-por-status", [PedidoController::class, "listarPorStatus"]);
 
-/**
- * 
- * Criação de pedidos
- */
+//Criação de pedidos
 Route::post("/criar-pedido", [PedidoController::class, "criarPedido"]);
 
 //Informações detalhadas de pedido e vendas
@@ -157,7 +150,7 @@ Route::put("/mudar-status-producao/{pedido_id}", [GerenciamentoPedidoController:
 //Produtos  
 Route::post("/cadastrar-produto", [ProdutoController::class, "cadastrarProduto"]);
 Route::put("/editar-produto/{produto_id}", [ProdutoController::class, "editarProduto"]);
-Route::delete("/deletar-produto/{id}", [ProdutoController::class, "excluirProduto"]);
+Route::put("/deletar-produto/{id}", [ProdutoController::class, "excluirProduto"]);
 
 //Estoque   
 Route::get("/estoque-lista", [EstoqueController::class, "obterEstoque"]);
@@ -165,15 +158,13 @@ Route::post("/registrar-produto-em-estoque", [EstoqueController::class, "registr
 Route::put("/retirar-produto-do-estoque/{id_produto}", [EstoqueController::class, "retirarProdutoEstoque"]);
 Route::put("/adicionar-no-estoque/{id_produto}", [EstoqueController::class, "adicionarAoEstoque"]);
 Route::put("/editar-estoque/{id_produto}", [EstoqueController::class, "editarEstoque"]);
-/**
- * Logs
- */
+
+//Logs
 Route::get("/logs/{id}", [LoggerController::class, "obterLogs"]);
 Route::get("/logs-lista", [LoggerController::class, "lista"]);
 Route::post("/criar-log", [LoggerController::class, "criarLog"]);
-/**
- * Validações
- */
+
+//Validações
 Route::get("/cpf/{cpf}", [ValidacaoController::class, "validaCPF"]);
 Route::get("/cnpj/{cnpj}", [ValidacaoController::class, "validaCNPJ"]);
 Route::get("/cep/{cep}", [ValidacaoController::class, "buscaCEP"]);
@@ -186,7 +177,6 @@ Route::group([], function () {
     Route::post("/edit-role", [PermissaoController::class, "editRole"]);
     
 });
-
 
 //Contatos
 Route::get("/contatos/{id_pessoa}", [ContatosController::class, "lista"]);
@@ -203,6 +193,10 @@ Route::delete("/deletar-banco/{id}", [BancoController::class, "excluir"]);
 //Pagamento
 Route::post("/pix", [PixController::class, "generateQrCode"]);
 Route::post("/mercado-pago", [CartaoController::class, "mercadoPago"]);
+Route::post("/token-cora", [CoraController::class, "token"]);
+Route::post("/pix-cora", [CoraController::class, "pix"]);
+Route::post("/boleto-cora", [CoraController::class, "boleto"]);
+Route::get("/lista-cora", [CoraController::class, "lista"]);
 
 //Projetos
 Route::group([], function() {
@@ -211,6 +205,7 @@ Route::group([], function() {
     Route::post("/salvar-projeto", [ProjetoController::class, "salvarProjeto"]);
     Route::delete("/excluir-projeto", [ProjetoController::class, "excluir-projeto"]);
 });
+
 //Catalogo
 Route::group([], function() { 
     Route::get("/catalogo", [CatalogoController::class, "obterCatalogo"]);
@@ -221,11 +216,18 @@ Route::group([], function() {
     //Route::get("/price-range", CatalogoController::class, "precoMaxMin"]);
 });
 
-Route::get("/teste", function(Request $request) {
-    return response()->json([
-        "IP" => $request->ip()
-    ]);
-});
+//Blog
+Route::delete("/excluir-post", [BlogController::class, "excluirPost"]);
+Route::get("/lista-post", [BlogController::class, "lista"]);
+Route::post("/cadastra-post", [BlogController::class, "cadastraPost"]);
+Route::get("/post/{id}", [BlogController::class, "post"]);
+Route::put("/editar-post/{id}", [BlogController::class, "editarPost"]);
+Route::delete("/excluir-tag", [TagController::class, "excluir"]);
+Route::get("/lista-tag", [TagController::class, "lista"]);
+Route::post("/cadastra-tag", [TagController::class, "cadastraTag"]);
+Route::get("/tag/{id}", [TagController::class, "tag"]);
+Route::put("/editar-tag/{id}", [TagController::class, "editarTag"]);
 
-Route::post("/cora", [\App\Http\Controllers\Pagamento\CoraController::class, "token"]);
-Route::post("/pix", [\App\Http\Controllers\Pagamento\CoraController::class, "pix"]);
+//Frete
+Route::post("/melhor-envio", [MelhorEnvioController::class, "cotacao"]);
+Route::post("/carrinho-envio", [MelhorEnvioController::class, "carrinho"]);

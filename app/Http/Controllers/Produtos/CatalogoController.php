@@ -134,4 +134,3 @@ class CatalogoController extends Controller
 
 
 }
-
