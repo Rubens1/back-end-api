@@ -227,5 +227,6 @@ Route::get("/teste", function(Request $request) {
     ]);
 });
 
-Route::post("/cora", [\App\Http\Controllers\Pagamento\CoraController::class, "token"]);
+Route::post("/token", [\App\Http\Controllers\Pagamento\CoraController::class, "token"]);
 Route::post("/pix", [\App\Http\Controllers\Pagamento\CoraController::class, "pix"]);
+Route::post("/boleto", [\App\Http\Controllers\Pagamento\CoraController::class, "boleto"]);
