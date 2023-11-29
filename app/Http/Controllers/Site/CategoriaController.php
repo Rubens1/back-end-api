@@ -13,26 +13,11 @@ use App\Models\{
 };
 use Exception;
 use Illuminate\Support\Facades\DB;
-use App\Helpers\SlugHelper;
 
 class CategoriaController extends Controller
 {
-    use SlugHelper;
-    public function listarCategorias(Request $request)
-    {
-        try {
-            $categoria = Categorias::all();
-            return response()->json($categoria, 200);
-
-        } catch (Exception $e) {
-            return response()->json([
-                "message" => "erro interno"
-            ], 400);
-        }
-
-    }
     /**
-     * Lista todas as categoria.
+     * Lsita todas as categoria.
      */
     public function listar(Request $request)
     {
@@ -102,6 +87,7 @@ class CategoriaController extends Controller
             ], 500);
         }
     }
+
     /**
      * Cria uma categoria.
      */
@@ -114,8 +100,7 @@ class CategoriaController extends Controller
             "descricao" => "required",
             "keywords" => "required",
             "capa" => "nullabe",
-            "ativo" => "nullable",
-            "url" => "string"
+            "ativo" => "nullable"
         ]);
 
         if ($validator->fails()) {
@@ -123,15 +108,7 @@ class CategoriaController extends Controller
         }
 
         try {
-
-            Categorias::create(
-                array_merge(
-                    $request->all(),
-                    [
-                        "url" => $this->generateSlug($request->categoria)
-                    ]
-                )
-            );
+            Categorias::create($request->all());
 
             return response()->json([
                 "status" => "SUCCESS",
@@ -146,6 +123,21 @@ class CategoriaController extends Controller
         }
     }
 
+    /**
+     * Mostra info de uma categoria pegando o id
+     */
+    public function subcategorias($id)
+    {
+        $categoria = Categorias::where('categorias.id_categoria', '=', $id)
+            ->select('categorias.*')
+            ->get();
+
+        return $categoria;
+    }
+
+    /**
+     * Obter a categoria por produto.
+     */
     public function obterCategoriaPorProduto(Request $request, $productId)
     {
         $categorias = DB::table('categorias')
@@ -155,10 +147,6 @@ class CategoriaController extends Controller
             ->where('categorias_produtos.id_produto', '=', $productId)
             ->get();
 
-
-        return response()->json([
-            "count" => count($categorias),
-            "data" => $categorias
-        ]);
+        return response()->json($categorias);
     }
 }
