@@ -58,7 +58,7 @@ class MelhorEnvioController extends Controller
             }
             $body = [
                 "service" => $request->service,
-                
+                "agency " => $request->agency,
                 "from" => [
                     "name" => $request->from_name,
                     "address" => $request->from_address,
@@ -191,6 +191,37 @@ class MelhorEnvioController extends Controller
         }
     }
 
+    //Imprimir a etiqueta
+    public function imprimirEtiqueta(Request $request){
+        try{
+            $array = [];
+
+            foreach ($request->orders as $key => $value) {
+                $array[$key] = $value;
+            
+                $body = [
+                    "orders" => $array,
+                ];
+            }
+            $url = env("MELHOR_ENVIO").'shipment/print';
+            $response = Http::withoutVerifying()->withOptions([
+                'headers' => [
+                    "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
+                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "Content-Type" =>  "application/json",
+                    "Accept" => "application/json"
+                    ]
+            ])->post($url, $body);
+
+            $data = $response->json();
+            return response()->json(['data' => $data], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
     //Lista de pedidos no carrinho
     public function listaCarrinho(){
         try {

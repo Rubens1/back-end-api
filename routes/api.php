@@ -241,3 +241,4 @@ Route::post("/cancela-etiqueta", [MelhorEnvioController::class, "cancelaEtiqueta
 Route::post("/rastreio", [MelhorEnvioController::class, "rastreio"]);
 Route::get("/saldo-frete", [MelhorEnvioController::class, "saldoMelhorEnvio"]);
 Route::post("/adicionar-saldo-frete", [MelhorEnvioController::class, "adicionaSaldo"]);
+Route::post("/imprimir-etiqueta", [MelhorEnvioController::class, "imprimirEtiqueta"]);
