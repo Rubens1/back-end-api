@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('ativo', 255)->default('1');
             $table->integer('hits')->default(0);
             $table->integer('ord')->default(0);
+            $table->string("url")->nullable();
             $table->timestamps();
             $table->unique('id');
             $table->unique('sn');
