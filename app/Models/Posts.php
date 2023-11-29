@@ -5,14 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Tags extends Model
+class Blogs extends Model
 {
     use HasFactory;
 
-    protected $table = 'tags';
+    protected $table = 'posts';
 
     protected $fillable = [
-        'nome',
-        'url'
+        "titulo",
+        "descricao",
+        "keywords",
+        "seo_descricao",
+        "capa",
+        "url"
     ];
 }

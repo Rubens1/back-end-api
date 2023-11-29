@@ -5,14 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Tags extends Model
+class Projetos extends Model
 {
     use HasFactory;
 
-    protected $table = 'tags';
-
     protected $fillable = [
-        'nome',
-        'url'
+        "projeto_uuid",
+        "nome_projeto",
+        "canvas_json",
+        "imagens",
+        "id_pessoa"
     ];
 }
