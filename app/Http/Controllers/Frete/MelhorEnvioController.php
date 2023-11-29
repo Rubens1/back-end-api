@@ -396,4 +396,32 @@ class MelhorEnvioController extends Controller
             ], 500);
         }
     }
+
+    //Adicionar valor no saldo da conta
+    public function adicionaSaldo(Request $request){
+        try {
+            $url = env("MELHOR_ENVIO").'balance';
+            
+            $body = [
+                "gateway" => $request->gateway,
+                "redirect" => $request->redirect,
+                "value" => $request->value
+            ];
+            $response = Http::withoutVerifying()->withOptions([
+                'headers' => [
+                    "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
+                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "Content-Type" =>  "application/json",
+                    "Accept" => "application/json"
+                    ]
+            ])->post($url, $body);
+            $data = $response->json();
+            return response()->json(['data' => $data], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

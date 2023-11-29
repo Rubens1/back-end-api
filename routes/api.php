@@ -191,7 +191,6 @@ Route::put("/editar-banco/{id}", [BancoController::class, "editar"]);
 Route::delete("/deletar-banco/{id}", [BancoController::class, "excluir"]);
 
 //Pagamento
-Route::post("/pix", [PixController::class, "generateQrCode"]);
 Route::post("/mercado-pago", [CartaoController::class, "mercadoPago"]);
 Route::post("/token-cora", [CoraController::class, "token"]);
 Route::post("/pix-cora", [CoraController::class, "pix"]);
@@ -241,3 +240,4 @@ Route::post("/verifica-etiqueta", [MelhorEnvioController::class, "verificaEtique
 Route::post("/cancela-etiqueta", [MelhorEnvioController::class, "cancelaEtiqueta"]);
 Route::post("/rastreio", [MelhorEnvioController::class, "rastreio"]);
 Route::get("/saldo-frete", [MelhorEnvioController::class, "saldoMelhorEnvio"]);
+Route::post("/adicionar-saldo-frete", [MelhorEnvioController::class, "adicionaSaldo"]);

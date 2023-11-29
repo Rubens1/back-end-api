@@ -135,7 +135,7 @@ class CoraController extends Controller
     //Lista de pagamentos
     public static function lista(Request $request)
     {
-        $url = "https://matls-clients.api.stage.cora.com.br/token";
+        $url = "https://matls-clients.api.stage.cora.com.br/invoices";
     }
 
 }
