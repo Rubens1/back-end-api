@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::create('blog', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId("id_tag")->references("id")->on("tags");
+            $table->foreignId("id_post")->references("id")->on("posts");
+            $table->longText('keywords')->nullable();
+            $table->longText('seo_descricao')->nullable();
+            $table->string('url')->nullable();
+            $table->timestamps();
+        });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        //
-    }
+   
 };

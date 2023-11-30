@@ -194,7 +194,7 @@ class PessoasController extends Controller
                 'pessoa' => $pessoa
             ], 200);
         } catch (Exception $e) {
-            return response()->json(["errors" => $e->getMessage()], 400);
+            return response()->json(["e" => $e->getMessage()], 400);
         }
     }
 

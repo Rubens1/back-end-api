@@ -51,60 +51,76 @@ class MelhorEnvioController extends Controller
     public function carrinho(Request $request){
         try {
             $url = env("MELHOR_ENVIO").'cart';
-            $array = [];
-            foreach ($request as $key => $value) {
-                $array[$key] = $value;
-                $produtos = ["products" => $array];
+            $produtos = [];
+            foreach ($request->products as $key => $value) {
+                $produtos[] = [
+                    "name" => $value["name"],
+                    "quantity" => $value["quantity"],
+                    "unitary_value" => $value["unitary_value"],
+                ];
             }
-            $body = [
-                "service" => $request->service,
-                "agency " => $request->agency,
-                "from" => [
-                    "name" => $request->from_name,
-                    "address" => $request->from_address,
-                    "city" => $request->from_city,
-                    "postal_code" => $request->from_postal_code,
-                    "phone" => $request->from_phone,
-                    "company_document" => $request->cnpj,
-                ],
-                "to" => [
-                    "name" => $request->to_name ,
-                    "address" => $request->to_address,
-                    "city" => $request->to_city,
-                    "postal_code" => $request->to_postal_code,
-                    "phone" => $request->to_phone,
-                    "document" => $request->cpf,
-                ],
-                "packages" => [
-                    [
-                        "price" => $request->price,
-                        "discount" => $request->discount,
-                        "format"=> $request->format,
-                        "dimensions" => [
-                            "height" => $request->height,
-                            "width" => $request->width,
-                            "length" => $request->length
-                        ],
-                        "weight" => $request->weight,
-                        "insurance_value" => $request->insurance_value,
-                        $produtos
-                    ]
-                ],
-                "volumes" => [
-                    "height" => $request->volumes_height,
-                    "width" => $request->volumes_width,
-                    "length" => $request->volumes_length,
-                    "weight" => $request->volumes_weight
-                ],
-                "options" => [
-                    "insurance_value" => $request->options_value,
-                    "receipt" => true,
-                    "own_hand" => true,
-                    "reverse" => true,
-                    "non_commercial" => true
-                ]
-            ];
 
+            $volumes = [];
+            foreach ($request->volumes as $key => $value) {
+                $volumes[] = [
+                    "height" => $value["height"],
+                    "width" => $value["width"],
+                    "length" => $value["length"],
+                    "weight" => $value["weight"]
+                ];
+            }
+
+            $body = [
+                    "service" => $request->servico,
+                    "agency" => $request->agencia,
+                    "from" => [
+                        "name" => $request->from["nome"],
+                        "phone" => $request->from["telefone"],
+                        "email" => $request->from["email"],
+                        "document" => $request->from["cpf"],
+                        "company_document" => $request->from["cnpj"],
+                        "state_register" => $request->from["registro"],
+                        "address" => $request->from["endereco"],
+                        "complement" => $request->from["complemento"],
+                        "number" => $request->from["numero"],
+                        "district" => $request->from["bairro"],
+                        "city" => $request->from["cidade"],
+                        "country_id" => $request->from["id_pais"],
+                        "postal_code" => $request->from["cep"],
+                        "note" => $request->from["observacao"]
+                    ],
+                    "to" => [
+                        "name" => $request->to["nome"],
+                        "phone" => $request->to["telefone"],
+                        "email" => $request->to["email"],
+                        "document" => $request->to["cpf"],
+                        "company_document" => $request->to["cnpj"],
+                        "state_register" => $request->to["registro"],
+                        "address" => $request->to["endereco"],
+                        "complement" => $request->to["complemento"],
+                        "number" => $request->to["numero"],
+                        "district" => $request->to["bairro"],
+                        "city" => $request->to["cidade"],
+                        "state_abbr" => $request->to["id_estado"],
+                        "country_id" => $request->to["id_pais"],
+                        "postal_code" => $request->to["cep"],
+                        "note" => $request->to["observacao"]
+                    ],
+                    "products" => $produtos,
+                    "volumes" => $volumes,
+                    "options" => [
+                        "insurance_value" => $request->options["seguro"],
+                        "receipt" => false,
+                        "own_hand" => false,
+                        "reverse" => false,
+                        "non_commercial" => false,
+                        "invoice" => [
+                            "key" => $request->options["invoice"]["key"]
+                        ],
+                        "platform" => $request->options["plataforma"]
+                    ]
+            
+            ];
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),

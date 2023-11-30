@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::create('tags', function (Blueprint $table) {
+            $table->id();
+            $table->string('nome')->nullable();
+            $table->string('url')->nullable();
+            $table->timestamps();
+        });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        //
-    }
+    
 };

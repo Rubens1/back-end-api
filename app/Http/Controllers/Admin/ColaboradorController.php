@@ -85,7 +85,7 @@ class ColaboradorController extends Controller
                 "expira_em" => $date_time->format("d-m-Y H:i")
             ]);
 
-            $link = "$request->url/$token";
+            $link = "http://localhost:3000/cadastrar-senha/$token";
 
             SendColaboradorSenhaEmailQueue::dispatchAfterResponse(
                 $colaborador->email,

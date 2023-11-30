@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('pedidos', function (Blueprint $table) {
             $table->id();
             $table->boolean("is_active")->default(true);
-            $table->integer('id_pedido')->default(0);
-            $table->integer('id_contrato')->default(0);
+            $table->string("numero_pedido")->nullable();
+            $table->integer('id_pedido')->unique()->default(0);
+            $table->integer('id_contrato')->unique()->default(0);
             $table->integer('id_bureau')->nullable();
             $table->enum('tipo', ['PEDIDO', 'ORCAMENTO', 'FATURA', 'AGRUPAMENTO', 'NF-ENTRADA', 'NF-DEVOLUCAO'])->default('PEDIDO');
             $table->decimal('custo_total', 10, 2)->default(0.00);

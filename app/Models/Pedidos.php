@@ -17,6 +17,7 @@ class Pedidos extends Model
         'id_contrato',
         'id_bureau',
         'tipo',
+        'numero_pedido',
         'custo_total',
         'custo_frete',
         'sit_pagto',
