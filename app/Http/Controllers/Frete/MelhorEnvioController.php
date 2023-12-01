@@ -123,7 +123,7 @@ class MelhorEnvioController extends Controller
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
-                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "User-Agent" => env("EMAIL_MELHOR_ENVIO"),
                     "Content-Type" =>  "application/json",
                     "Accept" => "application/json"
                     ]
@@ -151,7 +151,7 @@ class MelhorEnvioController extends Controller
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
-                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "User-Agent" => env("EMAIL_MELHOR_ENVIO"),
                     "Content-Type" =>  "application/json",
                     "Accept" => "application/json"
                     ]
@@ -179,7 +179,7 @@ class MelhorEnvioController extends Controller
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
-                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "User-Agent" => env("EMAIL_MELHOR_ENVIO"),
                     "Content-Type" =>  "application/json",
                     "Accept" => "application/json"
                     ]
@@ -207,7 +207,7 @@ class MelhorEnvioController extends Controller
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
-                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "User-Agent" => env("EMAIL_MELHOR_ENVIO"),
                     "Content-Type" =>  "application/json",
                     "Accept" => "application/json"
                     ]
@@ -229,7 +229,7 @@ class MelhorEnvioController extends Controller
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
-                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "User-Agent" => env("EMAIL_MELHOR_ENVIO"),
                     "Content-Type" =>  "application/json",
                     "Accept" => "application/json"
                     ]
@@ -251,7 +251,7 @@ class MelhorEnvioController extends Controller
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
-                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "User-Agent" => env("EMAIL_MELHOR_ENVIO"),
                     "Content-Type" =>  "application/json",
                     "Accept" => "application/json"
                     ]
@@ -273,7 +273,7 @@ class MelhorEnvioController extends Controller
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
-                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "User-Agent" => env("EMAIL_MELHOR_ENVIO"),
                     "Content-Type" =>  "application/json",
                     "Accept" => "application/json"
                     ]
@@ -298,7 +298,7 @@ class MelhorEnvioController extends Controller
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
-                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "User-Agent" => env("EMAIL_MELHOR_ENVIO"),
                     "Content-Type" =>  "application/json",
                     "Accept" => "application/json"
                     ]
@@ -324,7 +324,7 @@ class MelhorEnvioController extends Controller
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
-                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "User-Agent" => env("EMAIL_MELHOR_ENVIO"),
                     "Content-Type" =>  "application/json",
                     "Accept" => "application/json"
                     ]
@@ -350,7 +350,7 @@ class MelhorEnvioController extends Controller
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
-                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "User-Agent" => env("EMAIL_MELHOR_ENVIO"),
                     "Content-Type" =>  "application/json",
                     "Accept" => "application/json"
                     ]
@@ -381,7 +381,7 @@ class MelhorEnvioController extends Controller
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
-                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "User-Agent" => env("EMAIL_MELHOR_ENVIO"),
                     "Content-Type" =>  "application/json",
                     "Accept" => "application/json"
                     ]
@@ -403,7 +403,7 @@ class MelhorEnvioController extends Controller
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
-                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "User-Agent" => env("EMAIL_MELHOR_ENVIO"),
                     "Accept" => "application/json"
                     ]
             ])->get($url);
@@ -430,7 +430,7 @@ class MelhorEnvioController extends Controller
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
-                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "User-Agent" => env("EMAIL_MELHOR_ENVIO"),
                     "Content-Type" =>  "application/json",
                     "Accept" => "application/json"
                     ]
@@ -461,7 +461,7 @@ class MelhorEnvioController extends Controller
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
-                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "User-Agent" => env("EMAIL_MELHOR_ENVIO"),
                     "Content-Type" =>  "application/json",
                     "Accept" => "application/json"
                     ]
@@ -483,7 +483,7 @@ class MelhorEnvioController extends Controller
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
-                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "User-Agent" => env("EMAIL_MELHOR_ENVIO"),
                     "Accept" => "application/json"
                     ]
             ])->get($url);
@@ -504,7 +504,7 @@ class MelhorEnvioController extends Controller
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
-                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "User-Agent" => env("EMAIL_MELHOR_ENVIO"),
                     "Content-Type" =>  "application/json",
                     "Accept" => "application/json"
                     ]
@@ -536,7 +536,7 @@ class MelhorEnvioController extends Controller
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
-                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "User-Agent" => env("EMAIL_MELHOR_ENVIO"),
                     "Content-Type" =>  "application/json",
                     "Accept" => "application/json"
                     ]
@@ -558,7 +558,7 @@ class MelhorEnvioController extends Controller
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
-                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "User-Agent" => env("EMAIL_MELHOR_ENVIO"),
                     "Content-Type" =>  "application/json",
                     "Accept" => "application/json"
                     ]
@@ -585,7 +585,7 @@ class MelhorEnvioController extends Controller
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
-                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "User-Agent" => env("EMAIL_MELHOR_ENVIO"),
                     "Content-Type" =>  "application/json",
                     "Accept" => "application/json"
                     ]
@@ -607,7 +607,7 @@ class MelhorEnvioController extends Controller
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
-                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "User-Agent" => env("EMAIL_MELHOR_ENVIO"),
                     "Content-Type" =>  "application/json",
                     "Accept" => "application/json"
                     ]
