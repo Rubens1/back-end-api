@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Posts extends Model
+class Blogs extends Model
 {
     use HasFactory;
 
@@ -17,12 +17,6 @@ class Posts extends Model
         "keywords",
         "seo_descricao",
         "capa",
-        "id_pessoa",
         "url"
     ];
-
-    public function pessoas()
-    {
-        return $this->belongsTo(Pessoas::class, 'id_pessoa');
-    }
 }

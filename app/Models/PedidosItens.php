@@ -12,8 +12,6 @@ class PedidosItens extends Model
     protected $table = 'pedidos_itens';
 
     protected $fillable = [
-        'numero_pedido',
-        'id_pedido',
         'situacao',
         'item_data',
         'qtd',
@@ -30,7 +28,6 @@ class PedidosItens extends Model
         'repasseServico',
         'repasseManutencao',
         'custoColor',
-        'id_produto',
         'id_produto_estoque',
         'preco_compra',
         'valor_comissao',

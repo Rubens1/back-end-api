@@ -11,17 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('posts', function (Blueprint $table) {
-            $table->id();
-            $table->string('titulo')->nullable();
-            $table->longText('descricao')->nullable();
-            $table->longText('keywords')->nullable();
-            $table->longText('seo_descricao')->nullable();
-            $table->string('capa')->nullable();
-            $table->string('url')->nullable();
-            $table->foreignId("id_pessoa")->references("id")->on("pessoas");
-            $table->timestamps();
-        });
+        //
     }
-    
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        //
+    }
 };

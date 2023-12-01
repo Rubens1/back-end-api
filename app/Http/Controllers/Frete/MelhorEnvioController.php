@@ -51,7 +51,7 @@ class MelhorEnvioController extends Controller
     public function carrinho(Request $request){
         try {
             $url = env("MELHOR_ENVIO").'cart';
-            $produtos = [];
+
             foreach ($request->products as $key => $value) {
                 $produtos[] = [
                     "name" => $value["name"],
@@ -60,7 +60,6 @@ class MelhorEnvioController extends Controller
                 ];
             }
 
-            $volumes = [];
             foreach ($request->volumes as $key => $value) {
                 $volumes[] = [
                     "height" => $value["height"],
@@ -71,56 +70,56 @@ class MelhorEnvioController extends Controller
             }
 
             $body = [
-                    "service" => $request->servico,
-                    "agency" => $request->agencia,
-                    "from" => [
-                        "name" => $request->from["nome"],
-                        "phone" => $request->from["telefone"],
-                        "email" => $request->from["email"],
-                        "document" => $request->from["cpf"],
-                        "company_document" => $request->from["cnpj"],
-                        "state_register" => $request->from["registro"],
-                        "address" => $request->from["endereco"],
-                        "complement" => $request->from["complemento"],
-                        "number" => $request->from["numero"],
-                        "district" => $request->from["bairro"],
-                        "city" => $request->from["cidade"],
-                        "country_id" => $request->from["id_pais"],
-                        "postal_code" => $request->from["cep"],
-                        "note" => $request->from["observacao"]
+                "service" => $request->servico,
+                "agency" => $request->agencia,
+                "from" => [
+                    "name" => $request->from["nome"],
+                    "phone" => $request->from["telefone"],
+                    "email" => $request->from["email"],
+                    "document" => $request->from["cpf"],
+                    "company_document" => $request->from["cnpj"],
+                    "state_register" => $request->from["registro"],
+                    "address" => $request->from["endereco"],
+                    "complement" => $request->from["complemento"],
+                    "number" => $request->from["numero"],
+                    "district" => $request->from["bairro"],
+                    "city" => $request->from["cidade"],
+                    "country_id" => $request->from["id_pais"],
+                    "postal_code" => $request->from["cep"],
+                    "note" => $request->from["observacao"]
+                ],
+                "to" => [
+                    "name" => $request->to["nome"],
+                    "phone" => $request->to["telefone"],
+                    "email" => $request->to["email"],
+                    "document" => $request->to["cpf"],
+                    "company_document" => $request->to["cnpj"],
+                    "state_register" => $request->to["registro"],
+                    "address" => $request->to["endereco"],
+                    "complement" => $request->to["complemento"],
+                    "number" => $request->to["numero"],
+                    "district" => $request->to["bairro"],
+                    "city" => $request->to["cidade"],
+                    "state_abbr" => $request->to["id_estado"],
+                    "country_id" => $request->to["id_pais"],
+                    "postal_code" => $request->to["cep"],
+                    "note" => $request->to["observacao"]
+                ],
+                "products" => $produtos,
+                "volumes" => $volumes,
+                "options" => [
+                    "insurance_value" => $request->options["seguro"],
+                    "receipt" => false,
+                    "own_hand" => false,
+                    "reverse" => false,
+                    "non_commercial" => false,
+                    "invoice" => [
+                        "key" => $request->options["invoice"]["key"]
                     ],
-                    "to" => [
-                        "name" => $request->to["nome"],
-                        "phone" => $request->to["telefone"],
-                        "email" => $request->to["email"],
-                        "document" => $request->to["cpf"],
-                        "company_document" => $request->to["cnpj"],
-                        "state_register" => $request->to["registro"],
-                        "address" => $request->to["endereco"],
-                        "complement" => $request->to["complemento"],
-                        "number" => $request->to["numero"],
-                        "district" => $request->to["bairro"],
-                        "city" => $request->to["cidade"],
-                        "state_abbr" => $request->to["id_estado"],
-                        "country_id" => $request->to["id_pais"],
-                        "postal_code" => $request->to["cep"],
-                        "note" => $request->to["observacao"]
-                    ],
-                    "products" => $produtos,
-                    "volumes" => $volumes,
-                    "options" => [
-                        "insurance_value" => $request->options["seguro"],
-                        "receipt" => false,
-                        "own_hand" => false,
-                        "reverse" => false,
-                        "non_commercial" => false,
-                        "invoice" => [
-                            "key" => $request->options["invoice"]["key"]
-                        ],
-                        "platform" => $request->options["plataforma"]
-                    ]
-            
+                    "platform" => $request->options["plataforma"]
+                ]
             ];
+
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
@@ -141,20 +140,14 @@ class MelhorEnvioController extends Controller
     }
 
     //Paga o frete do pedido
-    public function pagaFrete(Request $request){
+    public function pagarFrete(Request $request){
 
         try{
             $url = env("MELHOR_ENVIO").'shipment/checkout';
 
-            $array = [];
-
-            foreach ($request->orders as $key => $value) {
-                $array[$key] = $value;
-                
-                $body = [
-                    "orders" => $array,
-                ];
-            }
+            $body = [
+                "orders" => $request->orders,
+            ];
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
@@ -176,18 +169,13 @@ class MelhorEnvioController extends Controller
     }
 
     //Gera a etiqueta
-    public function geraEtiqueta(Request $request){
+    public function gerarEtiqueta(Request $request){
         try{
-            $array = [];
-
-            foreach ($request->orders as $key => $value) {
-                $array[$key] = $value;
-            
-                $body = [
-                    "orders" => $array,
-                ];
-            }
             $url = env("MELHOR_ENVIO").'shipment/generate';
+          
+            $body = [
+                "orders" => $request->orders,
+            ];
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
@@ -210,16 +198,12 @@ class MelhorEnvioController extends Controller
     //Imprimir a etiqueta
     public function imprimirEtiqueta(Request $request){
         try{
-            $array = [];
-
-            foreach ($request->orders as $key => $value) {
-                $array[$key] = $value;
-            
-                $body = [
-                    "orders" => $array,
-                ];
-            }
             $url = env("MELHOR_ENVIO").'shipment/print';
+          
+            $body = [
+                "mode" =>  $request->mode,
+                "orders" => $request->orders
+            ];
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
@@ -333,15 +317,10 @@ class MelhorEnvioController extends Controller
     public function verificaEtiqueta(Request $request){
         try {
             $url = env("MELHOR_ENVIO").'shipment/cancellable';
-            $array = [];
-
-            foreach ($request->orders as $key => $value) {
-                $array[$key] = $value;
             
-                $body = [
-                    "orders" => $array,
-                ];
-            }
+            $body = [
+                "orders" => $request->orders,
+            ];
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
@@ -364,16 +343,10 @@ class MelhorEnvioController extends Controller
     public function cancelaEtiqueta(Request $request){
         try {
             $url = env("MELHOR_ENVIO").'shipment/cancel';
-            $array = [];
 
-            foreach ($request->orders as $key => $value) {
-                $array[$key] = $value;
-            
-                $body = [
-                    "orders" => $array,
-                    "reason_id" => 2
-                ];
-            }
+            $body = [
+                "orders" => $request->orders,
+            ];
             $response = Http::withoutVerifying()->withOptions([
                 'headers' => [
                     "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
@@ -462,6 +435,183 @@ class MelhorEnvioController extends Controller
                     "Accept" => "application/json"
                     ]
             ])->post($url, $body);
+            $data = $response->json();
+            return response()->json(['data' => $data], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    //Cadastra Loja
+    public function cadastraLoja(Request $request){
+        try {
+            $url = env("MELHOR_ENVIO").'companies';
+            
+            $body = [
+                "name" => $request->nome,
+                "email" => $request->email,
+                "description" => $request->descricao,
+                "company_name" => $request->empresa,
+                "document" => $request->cnpj,
+                "state_register" => $request->ie
+            ];
+            $response = Http::withoutVerifying()->withOptions([
+                'headers' => [
+                    "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
+                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "Content-Type" =>  "application/json",
+                    "Accept" => "application/json"
+                    ]
+            ])->post($url, $body);
+            $data = $response->json();
+            return response()->json(['data' => $data], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    //Lista lojas
+    public function listaLojas(){
+        try {
+            $url = env("MELHOR_ENVIO").'companies';
+            $response = Http::withoutVerifying()->withOptions([
+                'headers' => [
+                    "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
+                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "Accept" => "application/json"
+                    ]
+            ])->get($url);
+            $data = $response->json();
+            return response()->json(['data' => $data], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    //Visualizar loja
+    public function verLoja($id){
+        try {
+            $url = env("MELHOR_ENVIO").'companies/'.$id;
+            $response = Http::withoutVerifying()->withOptions([
+                'headers' => [
+                    "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
+                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "Content-Type" =>  "application/json",
+                    "Accept" => "application/json"
+                    ]
+            ])->get($url);
+            $data = $response->json();
+            return response()->json(['data' => $data], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    //Cadastra endereço de loja
+    public function cadastraEnderecoLoja(Request $request, $id){
+        try {
+            $url = env("MELHOR_ENVIO").'companies/'.$id.'/addresses';
+            
+            $body = [
+                "postal_code" => $request->cep,
+                "address" => $request->endereco,
+                "number" => $request->numero,
+                "company_name" => $request->empresa,
+                "complement" => $request->complemento,
+                "city" => $request->cidade,
+                "state" => $request->estado
+            ];
+            $response = Http::withoutVerifying()->withOptions([
+                'headers' => [
+                    "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
+                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "Content-Type" =>  "application/json",
+                    "Accept" => "application/json"
+                    ]
+            ])->post($url, $body);
+            $data = $response->json();
+            return response()->json(['data' => $data], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        } 
+    }
+
+    //Lista de endereços de lojas
+    public function listaEnderecosLojas($id){
+        try {
+            $url = env("MELHOR_ENVIO").'companies/'.$id."/addresses";
+            $response = Http::withoutVerifying()->withOptions([
+                'headers' => [
+                    "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
+                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "Content-Type" =>  "application/json",
+                    "Accept" => "application/json"
+                    ]
+            ])->get($url);
+            $data = $response->json();
+            return response()->json(['data' => $data], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    //Cadastra telefone de loja
+    public function cadastraTelefone(Request $request, $id){
+        try {
+            $url = env("MELHOR_ENVIO").'companies/'.$id.'/phones';
+            
+            $body = [
+                "type" => $request->tipo,
+                "phone" => $request->numero
+            ];
+            $response = Http::withoutVerifying()->withOptions([
+                'headers' => [
+                    "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
+                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "Content-Type" =>  "application/json",
+                    "Accept" => "application/json"
+                    ]
+            ])->post($url, $body);
+            $data = $response->json();
+            return response()->json(['data' => $data], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        } 
+    }
+
+    //Lista de telefones de lojas
+    public function listaTelefonesLojas($id){
+        try {
+            $url = env("MELHOR_ENVIO").'companies/'.$id."/phones";
+            $response = Http::withoutVerifying()->withOptions([
+                'headers' => [
+                    "Authorization" => "Bearer ".env("TOKEN_MELHOR_ENVIO"),
+                    "User-Agent" => "rubens.jesus1997@gmail.com",
+                    "Content-Type" =>  "application/json",
+                    "Accept" => "application/json"
+                    ]
+            ])->get($url);
             $data = $response->json();
             return response()->json(['data' => $data], 200);
         } catch (\Exception $e) {
