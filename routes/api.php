@@ -70,6 +70,7 @@ Route::put('/pessoa-atualizar', [PessoasController::class, 'atualizarToken']);
 Route::post('/pessoa-cadastro', [PessoasController::class, 'cadastro']);
 Route::get("/list-all-roles", [PermissaoController::class, "listAllRoles"]);
 Route::put("/atualizar-senha/{id}", [PessoasController::class, "atualizarSenha"]);
+Route::post("/envio-cadastro", [PessoasController::class, "preCadastro"]);
 
 /**
  * Colaborador

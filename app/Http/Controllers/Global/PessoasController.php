@@ -10,7 +10,7 @@ use App\Models\{
 };
 use DateTime;
 use Exception;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\{Auth, Mail};
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\{Hash, Validator};
 use App\Helpers\Logger;
@@ -31,7 +31,7 @@ class PessoasController extends Controller
     {
         $this->middleware('auth:pessoas', [
             'except' =>
-                ['entrar', 'cadastro', 'listar', "listarPaginada", "cadastrarEndereco", "enviarLinkDeRecupecaoDeSenha"]
+                ['entrar', 'cadastro', 'listar', "listarPaginada", "cadastrarEndereco", "enviarLinkDeRecupecaoDeSenha", "preCadastro"]
         ]);
     }
 
@@ -309,6 +309,9 @@ class PessoasController extends Controller
         }
     }
 
+    /**
+     * Atualizar a senha
+     */
     public static function atualizarSenha(Request $request, $id){
         try {
 
@@ -329,7 +332,48 @@ class PessoasController extends Controller
                 ], 400);
             }
            
-        } catch (\Throwable $th) {
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => "Erro no servidor",
+            ], 500);
+        }
+    }
+    
+    /**
+     * Pré-Cadastro e envio de email
+     */
+    public function preCadastro(Request $request){
+        $validator = Validator::make($request->all(), [
+            'nome' => 'string|between:1,100',
+            'email' => 'string|email|max:50|unique:pessoas',
+            'signature_email' => 'string|email|max:50|unique:pessoas',
+            'celular' => 'string|between:1,100',
+            'razao_social' => 'nullable|string|between:1,100',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                "errors" => $validator->errors()
+            ], 400);
+        }
+
+        try {
+
+            $pessoa = Pessoas::create(
+                array_merge(
+                    [
+                        "email" => $request->email,
+                        "signature_email" => $request->email,
+                        "celular" => $request->celular,
+                        "razao_social" => $request->razao_social,
+                        "nome" => $request->nome,
+                    ]
+                )
+            )->fresh();
+            Mail::to("rubens.jesus1997@gmail.com")->send("Email enviado com sucesso");
+            return response()->json($request);
+        } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => "Erro no servidor",
