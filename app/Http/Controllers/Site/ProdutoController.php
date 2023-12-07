@@ -8,7 +8,8 @@ use App\Models\{
     Produtos,
     CategoriaProdutos,
     Estoque,
-    Pessoas
+    Pessoas,
+    ProdutoCatalogo
 };
 use App\Helpers\{Logger, SlugHelper};
 
@@ -41,23 +42,21 @@ class ProdutoController extends Controller
     /**
      * Lista todos os produtos de forma paginada
      */
-
-
     public function obterProduto(Request $request, $slug)
     {
         try {
             $produto = Estoque::withWhereHas(
                 "produto",
                 function (Builder $query) use ($slug) {
-                    $query->where("src_alt", $slug);
+                    $query->where("url", $slug);
                 }
             )->first();
 
             if (!$produto || $produto == null) {
                 return response()->json([
                     "not_found" => true,
-                    "message" => "produto não econtrado"
-                ], 400);
+                    "message" => "produto não econtra do"
+                ], 404);
             }
 
             return response()->json($produto);
@@ -90,7 +89,7 @@ class ProdutoController extends Controller
     public function cadastrarProduto(Request $request)
     {
         try {
-
+            
             $validador = Validator::make($request->all(), [
                 "sn" => "unique:produtos",
                 'id_especializacao' => 'nullable|integer',
@@ -134,7 +133,7 @@ class ProdutoController extends Controller
                 return response()->json(["errors" => $validador->errors()], 422);
             }
 
-            $slug = ["src_alt" => $this->generateSlug($request->nome)];
+            $slug = ["url" => $this->generateSlug($request->nome)];
 
             $produto = Produtos::create(
                 array_merge(
@@ -143,6 +142,12 @@ class ProdutoController extends Controller
                 )
             )->fresh();
 
+            ProdutoCatalogo::create([
+                "produto_id" => $produto->id,
+                "categoria_id" => $request->id_categoria,
+                "sub_categoria_id" => $request->id_sub_categoria
+            ]);
+            
             $categoria = CategoriaProdutos::create([
                 "id_produto" => $produto->id ?? null,
                 "id_sub_categora" => $request->id_sub_categoria ?? null,
@@ -159,7 +164,6 @@ class ProdutoController extends Controller
             return response()->json([
                 "error" => $e->getMessage(),
                 "d" => $request->input(),
-                "s" => $produto,
                 "status" => "ERROR",
                 "message" => "Desculpe estamos enfrentando problemas internos."
             ], 500);
@@ -170,6 +174,8 @@ class ProdutoController extends Controller
     {
         $estoque = Estoque::where("id_produto", $id)->delete();
 
+        $estoque = ProdutoCatalogo::where("produto_id", $id)->delete();
+        
         $produto = Produtos::where("id", $id)->delete();
 
         return response()->json([

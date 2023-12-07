@@ -14,9 +14,13 @@ class Pedidos extends Model
     protected $fillable = [
         "id",
         'id_pedido',
+        'forma_pgmt',
         'id_contrato',
         'id_bureau',
         'tipo',
+        'codigo_frete',
+        'codigo_pagamento', 
+        'numero_pedido',
         'custo_total',
         'custo_frete',
         'sit_pagto',

@@ -13,7 +13,7 @@ class BancoController extends Controller
      /**
      * Lista de contatos pelo id
      */
-    public function lista(Request $request, $id_pessoa)
+    public function listar(Request $request, $id_pessoa)
     {
         try {
             $banco = Bancos::where("id_pessoa", $id_pessoa)->first();

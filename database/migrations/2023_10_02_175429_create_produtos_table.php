@@ -20,6 +20,9 @@ return new class extends Migration
             $table->integer('id_produto')->nullable(); //
             $table->string('nome')->nullable(); //
             $table->string('src_alt')->nullable(); //
+            $table->string("url")->nullable();
+            $table->string('cover')->nullable();
+            $table->longText('src_imagens')->nullable();
             $table->string('proporcao_venda', 15)->default('1:1'); //
             $table->string('proporcao_consumo', 15)->default('1:1'); //
             $table->integer('id_exclusivo')->nullable(); //
@@ -56,6 +59,7 @@ return new class extends Migration
             $table->unique('id');
             $table->unique('nome');
             $table->unique('sn');
+            $table->softDeletes();
             //$table->foreignId("id_categoria")->references("id")->on("categorias");
             //$table->foreignId("id_estoque")->references("id")->on("estoque");
         });
@@ -67,6 +71,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('produtos');
+        Schema::table("produtos", function(Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
     }
 };
 

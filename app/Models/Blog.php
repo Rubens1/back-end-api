@@ -14,15 +14,10 @@ class Blog extends Model
     protected $fillable = [
         "id_post",
         "id_tag",
-        "seo",
+        "keywords",
         "seo_descricao",
         "url"
     ];
-
-    public function tags()
-    {
-        return $this->belongsTo(Tags::class, 'id_tag');
-    }
 
     public function posts()
     {

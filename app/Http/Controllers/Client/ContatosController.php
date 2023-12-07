@@ -13,7 +13,7 @@ class ContatosController extends Controller
      /**
      * Lista de contatos pelo id
      */
-     public function lista(Request $request, $id_pessoa)
+     public function listar(Request $request, $id_pessoa)
      {
         try {
             $contatos = Contatos::where("id_pessoa", $id_pessoa)->get();
@@ -86,7 +86,6 @@ class ContatosController extends Controller
 
         try {
             $contato = Contatos::where("id", $id)->first();
-
 
             $contato->email = $request->email ?? $contato->email;
             $contato->telefone = $request->telefone ?? $contato->telefone;

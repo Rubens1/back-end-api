@@ -49,7 +49,7 @@ class CatalogoController extends Controller
                 "produto",
                 'subCategoria',
             ])
-            ->withWhereHas("categoria", function(Builder $query) use ($categoria) {
+            ->withWhereHas("categoria", function (Builder $query) use ($categoria) {
                 $query->where("categoria", $categoria);
             })
             ->whereIn("categoria_id", $request->query("categorias") ? $filter_parameters : $categorias)
@@ -80,31 +80,47 @@ class CatalogoController extends Controller
         $categorias = Categorias::all("id");
         $categorias_array = [];
 
-        foreach($categorias as $c) {
+        foreach ($categorias as $c) {
             array_push($categorias_array, $c->id);
         }
 
-    
+
+
+        //dd($request->query("categorias") == null);
+
         $catalogo = ProdutoCatalogo::withWhereHas("estoque")
-            ->with([
-                "produto",
-                'subCategoria',
-                "categoria"
-            ])
-
-            ->whereIn("categoria_id", $request->query("categorias") !== "undefined" || null || "" ? $filter_parameters : $categorias_array)
-            ->orWhereIn("sub_categoria_id", $request->query("categorias") !== "undefined" || null || "" ? $filter_parameters : $categorias_array)
-            ->paginate($request->query("per_page") ? (int) $request->query("per_page") : 10);
-
-
+        ->with(["produto", 'subCategoria', "categoria"])
+        ->whereIn(
+            "categoria_id",
+            $request->query("categorias") !== '""' && $request->query("categorias") !== null
+                ? $filter_parameters
+                : $categorias_array
+        )
+        ->orWhereIn(
+            "sub_categoria_id",
+            $request->query("categorias") !== "undefined" && $request->query("categorias") !== null && $request->query("categorias") !== ""
+                ? $filter_parameters
+                : $categorias_array
+        )
+        ->paginate(
+            $request->query("per_page")
+                ? (int) $request->query("per_page")
+                : 10
+        );
+    
         $data = array_merge([
             "dados" => $catalogo,
             "range" => [
                 "max" => $preco_max,
                 "min" => $preco_min,
-                "d" => explode(",", $request->query("categorias"))
+                "categoria" => $request->query("categorias"),
+                "d" => explode(",", $request->query("categorias")),
+                /*   "categoria" => $request->query("categorias"),
+                  "p" => $filter_parameters,
+                  "s" => $x  */
             ]
         ]);
+
 
         return response()->json($data);
     }
@@ -134,3 +150,4 @@ class CatalogoController extends Controller
 
 
 }
+

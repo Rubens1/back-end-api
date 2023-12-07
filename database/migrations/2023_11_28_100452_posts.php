@@ -11,7 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::create('posts', function (Blueprint $table) {
+            $table->id();
+            $table->string("titulo", 255)->nullable();
+            $table->longText('descricao');
+            $table->longText('keywords');
+            $table->longText('seo_descricao');
+            $table->string("capa", 255)->nullable();
+            $table->string("url", 255)->nullable();
+            $table->timestamps();
+        });
     }
 
     /**
@@ -19,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('posts');
     }
 };

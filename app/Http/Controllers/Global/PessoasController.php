@@ -189,12 +189,24 @@ class PessoasController extends Controller
                 )
             )->fresh();
 
+            $token = auth('pessoas')->attempt(['email' => $request->email, 'password' => $request->senha]);
+
+        if (!$token) {
             return response()->json([
-                'message' => 'Usuario registrado com sucesso',
-                'pessoa' => $pessoa
-            ], 200);
+                'status' => 'error',
+                'message' => 'Acesso negado',
+            ], 401);
+        }
+
+        $pessoa = auth('pessoas')->user();
+        return response()->json([
+            'status' => 'success',
+            'pessoa' => $pessoa,
+            'message' => 'Usuario registrado com sucesso',
+            'token' => $token,
+        ], 200);
         } catch (Exception $e) {
-            return response()->json(["errors" => $e->getMessage()], 400);
+            return response()->json(["e" => $e->getMessage()], 400);
         }
     }
 

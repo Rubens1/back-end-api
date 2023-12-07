@@ -16,7 +16,7 @@ use Exception;
 class TagController extends Controller
 {
     //Lista de tags
-    public function lista(Request $request){
+    public function listar(Request $request){
         return Tags::all();
     }
 
@@ -24,7 +24,7 @@ class TagController extends Controller
     public function cadastraTag(Request $request){
         $validator = validator::make($request->all(), [
             "nome" => "required|string",
-            "url" => "nullabe|string",
+            "url" => "required|string",
         ]);
 
         if ($validator->fails()) {
@@ -52,7 +52,6 @@ class TagController extends Controller
         try {
             $tag = Tags::where("id", $id)->first();
 
-
             $tag->nome = $request->nome ?? $tag->nome;
             $tag->url = $request->url ?? $tag->url;
 
@@ -60,8 +59,8 @@ class TagController extends Controller
 
             return response()->json([
                 "message" => "Dados atualizados com sucesso",
-                "fresh" => $post
-            ]);
+                "fresh" => $tag
+            ],200);
 
         } catch (Exception $e) {
             return response()->json([
@@ -91,5 +90,10 @@ class TagController extends Controller
     //Tag
     public function tag($id){
         return Tags::findOrfail($id);
+    }
+
+    //Tag por url
+    public function tagLink($url){
+        return response()->json(Tags::where('url', $url)->first());
     }
 }
