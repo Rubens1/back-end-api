@@ -80,14 +80,12 @@ Route::group(["prefix" => "colaboradores"], function () {
     Route::post("/login", [ColaboradorLoginController::class, "login"]);
 });
 
-
 /**
  * Senhas
  */
 Route::post("/recuperar-senha", [SenhaController::class, "enviarLinkDeRecupecaoDeSenha"]);
 Route::post("/verificar-token-senha", [SenhaController::class, "verificarTokenDeRecuperacaoDeSenha"]);
 Route::post("/alterar-senha", [SenhaController::class, "recuperarSenha"]);
-
 
 /**
  * Produtos público

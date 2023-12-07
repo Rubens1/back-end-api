@@ -16,7 +16,15 @@ use Illuminate\Support\Facades\{Hash, Validator};
 use App\Helpers\Logger;
 use App\Models\RecuperarSenha;
 use App\Mail\SendPasswordMail;
-use App\Jobs\RecuperSenhaQueue;
+use App\Jobs\{
+    RecuperSenhaQueue,
+    ContatoQueueMail,
+    PreCadastroQueueMail
+};
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Mail\Mailable;
+use Illuminate\Queue\SerializesModels;
 
 class PessoasController extends Controller
 {
@@ -341,26 +349,26 @@ class PessoasController extends Controller
     }
     
     /**
-     * Pré-Cadastro e envio de email
+     * Pré-Cadastro e envio de email na "pagina para empresa"
      */
     public function preCadastro(Request $request){
-        $validator = Validator::make($request->all(), [
+        /* $validator = Validator::make($request->all(), [
             'nome' => 'string|between:1,100',
             'email' => 'string|email|max:50|unique:pessoas',
             'signature_email' => 'string|email|max:50|unique:pessoas',
             'celular' => 'string|between:1,100',
             'razao_social' => 'nullable|string|between:1,100',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json([
                 "errors" => $validator->errors()
             ], 400);
         }
-
+        */
+    
         try {
-
-            $pessoa = Pessoas::create(
+            /* $pessoa = Pessoas::create(
                 array_merge(
                     [
                         "email" => $request->email,
@@ -370,15 +378,90 @@ class PessoasController extends Controller
                         "nome" => $request->nome,
                     ]
                 )
-            )->fresh();
-            Mail::to("rubens.jesus1997@gmail.com")->send("Email enviado com sucesso");
-            return response()->json($request);
+            )->fresh(); */
+    
+            // Comentei a linha abaixo, pois você está retornando antes de enviar o e-mail
+            // return $this->view('emails.contato')->with(['data' => $request]);
+    
+       
+            PreCadastroQueueMail::dispatchAfterResponse(
+                $request->email,
+                $request->nome,
+                $request->celular,
+                $request->mensagem,
+                $request->razao_social
+            );
+          
+            // Retorne uma resposta de sucesso após o envio do e-mail
+            return response()->json([
+                'status' => 'success',
+                'message' => 'E-mail enviado com sucesso',
+            ], 200);
+    
         } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => "Erro no servidor",
+                'message' => $e->getMessage(),
             ], 500);
         }
-    }
+    }    
+
+
+    /**
+     * Pré-Cadastro e envio de email na "contato"
+     */
+    public function preCadastroContato(Request $request){
+        /* $validator = Validator::make($request->all(), [
+            'nome' => 'string|between:1,100',
+            'email' => 'string|email|max:50|unique:pessoas',
+            'signature_email' => 'string|email|max:50|unique:pessoas',
+            'celular' => 'string|between:1,100',
+            'razao_social' => 'nullable|string|between:1,100',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json([
+                "errors" => $validator->errors()
+            ], 400);
+        }
+        */
+    
+        try {
+            /* $pessoa = Pessoas::create(
+                array_merge(
+                    [
+                        "email" => $request->email,
+                        "signature_email" => $request->email,
+                        "celular" => $request->celular,
+                        "razao_social" => $request->razao_social,
+                        "nome" => $request->nome,
+                    ]
+                )
+            )->fresh(); */
+    
+            // Comentei a linha abaixo, pois você está retornando antes de enviar o e-mail
+            // return $this->view('emails.contato')->with(['data' => $request]);
+    
+            
+            ContatoQueueMail::dispatchAfterResponse(
+                $request->email,
+                $request->nome,
+                $request->celular,
+                $request->mensagem
+            );
+          
+            // Retorne uma resposta de sucesso após o envio do e-mail
+            return response()->json([
+                'status' => 'success',
+                'message' => 'E-mail enviado com sucesso',
+            ], 200);
+    
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }  
 
 }
