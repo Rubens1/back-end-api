@@ -75,6 +75,8 @@ Route::put("/atualizar-senha/{id}", [PessoasController::class, "atualizarSenha"]
 Route::post("/envio-cadastro", [PessoasController::class, "preCadastro"]);
 Route::post("/contato-cadastro", [PessoasController::class, "preCadastroContato"]);
 Route::get("/lista-criadores", [PessoasController::class, "listaCriadores"]);
+Route::get("/perfil-criador/{id}", [PessoasController::class, "perfilCriador"]);
+Route::post("/busca-criador", [PessoasController::class, "buscaCriador"]);
 
 /**
  * Colaborador

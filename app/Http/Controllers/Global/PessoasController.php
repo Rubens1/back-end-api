@@ -39,7 +39,7 @@ class PessoasController extends Controller
     {
         $this->middleware('auth:pessoas', [
             'except' =>
-                ['entrar', 'cadastro', 'listar', "listarPaginada", "cadastrarEndereco", "enviarLinkDeRecupecaoDeSenha", "preCadastro", "preCadastroContato", "listaCriadores"]
+                ['entrar', 'cadastro', 'listar', "listarPaginada", "cadastrarEndereco", "enviarLinkDeRecupecaoDeSenha", "preCadastro", "preCadastroContato", "listaCriadores", "perfilCriador", "buscaCriador"]
         ]);
     }
 
@@ -473,4 +473,27 @@ class PessoasController extends Controller
         return response()->json($criador);
     }
 
+    /**
+     * Info de um criador de conteudo
+     */
+    public function perfilCriador($id){
+        return Pessoas::where('id', $id)
+        ->select("id", "nome")
+        ->first();
+    }
+
+    /**
+     * Busca Criador
+     */
+    public function buscaCriador(Request $request){
+        return Pessoas::where([
+                ['grupos.grupo', '=', 'criador'],
+                ['nome', 'like', "%{$request->nome}%"]
+            ])
+            ->leftJoin('pessoas_grupos', 'pessoas_grupos.id_pessoa', '=', 'pessoas.id')
+            ->leftJoin('grupos', 'grupos.id', '=', 'pessoas_grupos.id_grupo')
+            ->select('pessoas.nome','pessoas.id')
+            ->get();
+    }
+    
 }
