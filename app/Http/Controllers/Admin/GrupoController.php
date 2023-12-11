@@ -24,7 +24,7 @@ class GrupoController extends Controller
     public function cadastrar(Request $request)
     {
         $validator = validator::make($request->all(), [
-            'grupo' => 'required|string',
+            'grupo' => 'required|string|unique:grupos',
             'permissoes' => 'string',
         ]);
     

@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\{
     Pessoas,
-    PessoasEndereco
+    PessoasEndereco,
+    Grupos
 };
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use DateTime;
 use Exception;
 use Illuminate\Support\Facades\{Auth, Mail};
@@ -477,9 +479,20 @@ class PessoasController extends Controller
      * Info de um criador de conteudo
      */
     public function perfilCriador($id){
-        return Pessoas::where('id', $id)
-        ->select("id", "nome")
-        ->first();
+        $grupos = Grupos::select("id")->where("grupo", "like", "%criador%")->get();
+
+        $criador = Pessoas::withWhereHas("grupo", function (Builder $query) use ($grupos) {
+            $query->whereIn("id_grupo", $grupos);
+        })->where("id", $id)->first();
+
+        if (!$criador || $criador == null) {
+            return response()->json([
+                "message" => "Criador não econtrado",
+                "not_found" => true
+            ], 400);
+        }
+
+        return response()->json($criador);
     }
 
     /**

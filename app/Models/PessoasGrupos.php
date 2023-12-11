@@ -17,7 +17,12 @@ class PessoasGrupos extends Model
 
     public function pessoas()
     {
-        return $this->belongsToMany(Pessoas::class);
+        return $this->belongsToMany(Pessoas::class, "id_pessoa");
+    }
+
+    public function grupos()
+    {
+        return $this->hasMany(Grupos::class, "id");
     }
     
 }

@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Route;
+
 //Controllers
 use App\Http\Controllers\Pagamento\{
     MPController,
@@ -51,7 +53,9 @@ use App\Http\Controllers\Produtos\{
     EstoqueController,
     CatalogoController
 };
+
 use Stevebauman\Location\Facades\Location;
+
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 /*
@@ -64,7 +68,6 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
 
 //Rotas públicas
 Route::post('/pessoa-entrar', [PessoasController::class, 'entrar']);
@@ -132,7 +135,6 @@ Route::put("/editar-categoria/{id}", [CategoriaController::class, "editar"]);
 Route::get("/listar-categorias", [CategoriaController::class, "listarCategorias"]);
 Route::get("/categoria-produto/{produto_id}", [CategoriaController::class, "obterCategoriaPorProduto"]);
 Route::get("/subcategorias/{id}", [CategoriaController::class, "subcategorias"]);
-
 
 //Nota fiscal
 Route::get('/nfe', [NfeController::class, 'listar']);
@@ -266,7 +268,6 @@ Route::group([], function() {
     Route::post("/listar-pedidos-cliente/{cliente_id}", [PedidoController::class, "listarPedidosClientePorId"]);
 });
 
-
 //Operadores
 Route::post("/registrar-op-pagamento", [OperadorDePagamentoController::class, "registrarNovoOperadorDePagamento"]);
 
@@ -294,12 +295,6 @@ Route::group(["prefix" => "frete"], function() {
     Route::get("/lista-telefones/{id}", [MelhorEnvioController::class, "listaTelefonesLojas"]);
     Route::post("/cadastra-telefone/{id}", [MelhorEnvioController::class, "cadastraTelefone"]);
 });
-
-//Grupos
-Route::delete("/deletar-grupo/{id}", [GrupoController::class, "excluir"]);
-Route::put("/editar-grupo/{id}", [GrupoController::class, "editar"]);
-Route::post("/cadastrar-grupo", [GrupoController::class, "cadastrar"]);
-Route::get("/lista-grupos", [GrupoController::class, "listar"]);
 
 //Pessoa Grupo
 Route::group(["prefix" => "pessoas-grupos"], function() {

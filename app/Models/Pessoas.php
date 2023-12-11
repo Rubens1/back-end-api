@@ -121,4 +121,10 @@ class Pessoas extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(PessoasGrupos::class);
     }
+
+
+    public function grupo()
+    {
+        return $this->hasMany(PessoasGrupos::class, "id_pessoa");
+    }
 }
